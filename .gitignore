@@ -1,0 +1,6 @@
+# Environments
+.venv
+
+# Hide system files
+**/.DS_Store
+
