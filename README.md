@@ -5,7 +5,7 @@
 1. **Clone the repository**:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/alejandranavcas/glasshome-matching-colivers.git
    cd glasshome-matching-colivers
    ```
 
@@ -30,4 +30,6 @@
 
 ## Run the streamlit app
 
+```bash
 streamlit run app.py
+```
