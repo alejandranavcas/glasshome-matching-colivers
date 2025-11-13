@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import os
+from datetime import datetime
 
 # Initialize session state variables
 if 'step' not in st.session_state:
@@ -129,6 +131,26 @@ elif st.session_state.step == 2:
     with col2:
         if st.button("Find Matches →", key="find_matches"):
             if len(description) >= 50:
+                # Prepare row to save
+                try:
+                    save_path = os.path.join("..", "data", "save_mock_profiles.csv")
+                    # Build row dict: username, description, timestamp, and questionnaire averages
+                    row = {
+                        "username": st.session_state.username,
+                        "description": description,
+                        "timestamp": datetime.utcnow().isoformat()
+                    }
+                    # Ensure user_responses is available
+                    row.update({k: float(v) for k, v in st.session_state.user_responses.items()})
+                    row_df = pd.DataFrame([row])
+
+                    # Write (append) to CSV, create file with header if needed
+                    write_header = not os.path.exists(save_path)
+                    row_df.to_csv(save_path, mode="a", header=write_header, index=False)
+
+                except Exception as e:
+                    st.error(f"Failed to save profile: {e}")
+                # Save to session and advance
                 st.session_state.user_description = description
                 st.session_state.step = 3
                 st.rerun()
