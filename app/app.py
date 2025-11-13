@@ -5,11 +5,13 @@ import numpy as np
 
 # Initialize session state variables
 if 'step' not in st.session_state:
-    st.session_state.step = 1
+    st.session_state.step = 0  # start at step 0 for username
 if 'user_responses' not in st.session_state:
     st.session_state.user_responses = {}
 if 'user_description' not in st.session_state:
     st.session_state.user_description = ""
+if 'username' not in st.session_state:
+    st.session_state.username = ""
 
 # Move questions dictionary to top level scope
 questions = {
@@ -54,9 +56,34 @@ questions = {
 
 st.title("Co-Living Compatibility Matching POC")
 
+# --- STEP 0: USERNAME ---
+if st.session_state.step == 0:
+    st.header("Welcome — Create a Username")
+    st.write("Choose a username to identify yourself in matches.")
+
+    username = st.text_input("Username", value=st.session_state.username, max_chars=30,
+                             help="Enter a display name (3+ characters).")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Quit", key="quit_button"):
+            st.stop()
+    with col2:
+        # Use a single button call and inspect its boolean return value.
+        next_clicked = st.button("Next", key="username_next")
+        if next_clicked:
+            if len(username.strip()) >= 3:
+                st.session_state.username = username.strip()
+                st.session_state.step = 1
+                st.rerun()
+            else:
+                st.error("Username must be at least 3 characters.")
+
 # --- STEP 1: QUESTIONNAIRE ---
-if st.session_state.step == 1:
+elif st.session_state.step == 1:
     st.header("Step 1: Complete Your Attitudinal Questionnaire")
+
+    st.write(f"Signed in as: **{st.session_state.username}**")
 
     user_responses = {}
     submit_step1 = False
@@ -72,10 +99,17 @@ if st.session_state.step == 1:
             domain_scores.append(score)
         user_responses[domain] = sum(domain_scores)/len(domain_scores)
 
-    if st.button("Next Step"):
-        st.session_state.user_responses = user_responses
-        st.session_state.step = 2
-        st.rerun()
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("← Back", key="back_to_username"):
+            st.session_state.step = 0
+            st.rerun()
+
+    with col2:
+        if st.button("Next Step", key="next_to_description"):
+            st.session_state.user_responses = user_responses
+            st.session_state.step = 2
+            st.rerun()
 
 # --- STEP 2: FREE TEXT DESCRIPTION ---
 elif st.session_state.step == 2:
@@ -88,15 +122,18 @@ elif st.session_state.step == 2:
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("← Back"):
+        if st.button("← Back", key="back_to_questionnaire"):
             st.session_state.step = 1
             st.rerun()
 
     with col2:
-        if st.button("Find Matches →") and len(description) >= 50:
-            st.session_state.user_description = description
-            st.session_state.step = 3
-            st.rerun()
+        if st.button("Find Matches →", key="find_matches"):
+            if len(description) >= 50:
+                st.session_state.user_description = description
+                st.session_state.step = 3
+                st.rerun()
+            else:
+                st.error("Please write at least 50 characters.")
 
 # --- STEP 3: SHOW MATCHES ---
 else:
@@ -118,11 +155,13 @@ else:
     top_matches = profiles_df.sort_values(by="similarity", ascending=False).head(3)
 
     st.write("## 🧩 Your Top 3 Compatibility Matches")
+    st.write(f"Showing matches for **{st.session_state.username}**")
     st.dataframe(top_matches[["user_id", "name", "similarity"]])
     st.bar_chart(top_matches.set_index("name")["similarity"])
 
-    if st.button("Start Over"):
-        st.session_state.step = 1
+    if st.button("Start Over", key="start_over"):
+        st.session_state.step = 0
         st.session_state.user_responses = {}
         st.session_state.user_description = ""
+        st.session_state.username = ""
         st.rerun()
