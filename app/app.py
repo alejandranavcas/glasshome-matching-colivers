@@ -115,12 +115,34 @@ elif st.session_state.step == 1:
 
 # --- STEP 2: FREE TEXT DESCRIPTION ---
 elif st.session_state.step == 2:
-    st.header("Step 2: Tell Us About Yourself")
+    st.header("Step 2: Tell Us About Your Values")
 
     st.write("Please describe yourself, your lifestyle, and what you're looking for in a co-living situation:")
-    description = st.text_area("Your Description",
-                             help="Write at least 50 characters",
-                             max_chars=500)
+
+    # Three separate prompts requested by the user
+    st.markdown("**Living together**: Imagine you’re living in a shared community or co-housing project. What matters most to you in how people live together?")
+    living_together = st.text_area(
+        "",
+        help="Please write at least 50 characters.",
+        max_chars=500,
+        key="living_together"
+    )
+
+    st.markdown("**Decision-making and rules**: When the group needs to make decisions or set rules, what do you think is the best way to do that?")
+    decision_making = st.text_area(
+        "",
+        help="Please write at least 50 characters.",
+        max_chars=500,
+        key="decision_making"
+    )
+
+    st.markdown("**Personal contribution**: What would you most like to contribute or receive in a community like this?")
+    personal_contribution = st.text_area(
+        "",
+        help="Please write at least 50 characters.",
+        max_chars=500,
+        key="personal_contribution"
+    )
 
     col1, col2 = st.columns(2)
     with col1:
@@ -130,14 +152,18 @@ elif st.session_state.step == 2:
 
     with col2:
         if st.button("Find Matches →", key="find_matches"):
-            if len(description) >= 50:
+            # Require at least 50 chars total across the three answers (keeps previous behavior)
+            total_len = len((living_together or "") + (decision_making or "") + (personal_contribution or ""))
+            if total_len >= 50:
                 # Prepare row to save
                 try:
                     save_path = os.path.join("..", "data", "save_mock_profiles.csv")
-                    # Build row dict: username, description, timestamp, and questionnaire averages
+                    # Build row dict: username, three answers, timestamp, and questionnaire averages
                     row = {
                         "username": st.session_state.username,
-                        "description": description,
+                        "living_together": living_together,
+                        "decision_making": decision_making,
+                        "personal_contribution": personal_contribution,
                         "timestamp": datetime.utcnow().isoformat()
                     }
                     # Ensure user_responses is available
@@ -150,12 +176,16 @@ elif st.session_state.step == 2:
 
                 except Exception as e:
                     st.error(f"Failed to save profile: {e}")
-                # Save to session and advance
-                st.session_state.user_description = description
+                # Save concatenated description to session and advance
+                st.session_state.user_description = "\n\n".join([
+                    f"Living together: {living_together}",
+                    f"Decision-making: {decision_making}",
+                    f"Personal contribution: {personal_contribution}"
+                ])
                 st.session_state.step = 3
                 st.rerun()
             else:
-                st.error("Please write at least 50 characters.")
+                st.error("Please write at least 50 characters across the three answers.")
 
 # --- STEP 3: SHOW MATCHES ---
 else:
