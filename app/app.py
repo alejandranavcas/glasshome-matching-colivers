@@ -264,6 +264,33 @@ else:
     # Load profiles
     profiles_df = pd.read_csv("../data/profiles.csv")
 
+    # -------------------------------
+    # APPLY HARD REQUIREMENT FILTERS
+    # -------------------------------
+    user_req = st.session_state.user_requirements
+
+    # Filter by exact match on categorical fields
+    filtered_df = profiles_df[
+        (profiles_df["cleanliness"] == user_req["cleanliness"]) &
+        (profiles_df["smoking"] == user_req["smoking"]) &
+        (profiles_df["pets"] == user_req["pets"]) &
+        (profiles_df["desired_location"] == user_req["desired_location"])
+    ]
+
+    # If no profiles match the hard filters:
+    if filtered_df.empty:
+        st.warning("No matches found that meet all your lifestyle and location requirements.")
+        if st.button("Start Over", key="start_over_no_match"):
+            st.session_state.step = 0
+            st.session_state.user_personality = {}
+            st.session_state.user_values = ""
+            st.session_state.username = ""
+            st.rerun()
+        st.stop()
+
+    # -------------------------------
+    # CALCULATE SIMILARITY ON FILTERED PROFILES
+    # -------------------------------
     # Calculate value-based similarity
     user_vector = np.array([float(st.session_state.user_personality[domain])
                            for domain in questions.keys()])
@@ -276,10 +303,13 @@ else:
     profiles_df["similarity"] = value_similarities
     top_matches = profiles_df.sort_values(by="similarity", ascending=False).head(3)
 
+    # -------------------------------
+    # DISPLAY RESULTS
+    # -------------------------------
     st.write("## 🧩 Your Top 3 Compatibility Matches")
     st.write(f"Showing matches for **{st.session_state.username}**")
-    st.dataframe(top_matches[["user_id", "name", "similarity"]])
-    st.bar_chart(top_matches.set_index("name")["similarity"])
+    st.dataframe(top_matches[["user_id", "user_name", "similarity"]])
+    st.bar_chart(top_matches.set_index("user_name")["similarity"])
 
     if st.button("Start Over", key="start_over"):
         st.session_state.step = 0
