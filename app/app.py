@@ -8,12 +8,14 @@ from datetime import datetime
 # Initialize session state variables
 if 'step' not in st.session_state:
     st.session_state.step = 0  # start at step 0 for username
-if 'user_responses' not in st.session_state:
-    st.session_state.user_responses = {}
-if 'user_description' not in st.session_state:
-    st.session_state.user_description = ""
 if 'username' not in st.session_state:
     st.session_state.username = ""
+if 'user_requirements' not in st.session_state:
+    st.session_state.user_requirements = {}
+if 'user_personality' not in st.session_state:
+    st.session_state.user_personality = {}
+if 'user_values' not in st.session_state:
+    st.session_state.user_values = ""
 
 # Move questions dictionary to top level scope
 questions = {
@@ -33,26 +35,6 @@ questions = {
         "I’m comfortable discussing conflicts openly.",
         "I prefer to avoid confrontation, even if issues remain unresolved. (reverse)",
         "I believe differences of opinion can strengthen relationships."
-    ],
-    "shared_responsibility": [
-        "I believe everyone should share chores equally.",
-        "I take initiative to solve shared household problems.",
-        "I enjoy planning and organizing group activities."
-    ],
-    "sustainability_values": [
-        "I prefer eco-friendly or minimalist lifestyles.",
-        "I’m willing to pay more for sustainable living solutions.",
-        "Sharing resources (e.g., tools, appliances) is efficient and fulfilling."
-    ],
-    "privacy_needs": [
-        "I need daily time alone to recharge.",
-        "I’m comfortable sharing common spaces most of the time. (reverse)",
-        "Having clear boundaries is essential for harmonious living."
-    ],
-    "diversity_openness": [
-        "I enjoy living with people from different cultural backgrounds.",
-        "Diversity makes communities stronger.",
-        "I’m open to learning from people with different lifestyles or beliefs."
     ]
 }
 
@@ -96,13 +78,78 @@ Your Privacy Matters: All your data is securely stored in our private databases 
             else:
                 st.error("Username must be at least 3 characters.")
 
-# --- STEP 1: QUESTIONNAIRE ---
+
+# --- STEP 1: LIFESTYLE PREFERENCES ---
 elif st.session_state.step == 1:
-    st.header("Step 1: Complete Your Attitudinal Questionnaire")
+    st.header("Step 1: Lifestyle Preferences")
 
     st.write(f"Signed in as: **{st.session_state.username}**")
 
-    user_responses = {}
+    # Cleanliness standard
+    cleanliness = st.radio(
+        "Choose your cleanliness standard:",
+        ("Very tidy", "Tidy", "Relaxed"),
+        index=1,
+        key="cleanliness"
+    )
+
+    # Smoking/vaping preference
+    smoking = st.radio(
+        "Smoking/Vaping preference:",
+        ("Yes", "Only in private room", "No"),
+        index=2,
+        key="smoking"
+    )
+
+    # Cats and dogs policy
+    pets = st.radio(
+        "Pets policy:",
+        ("Yes", "Only in private space", "No"),
+        index=2,
+        key="pets"
+    )
+
+    # Desired Location
+    desired_location = st.text_input(
+        "Desired location (city, neighborhood, or region):",
+        placeholder="e.g., Germany, Berlin, Kreuzberg",
+        key="desired_location"
+    )
+
+    # Other Requirements
+    other_requirements = st.text_area(
+        "Other requirements (optional):",
+        placeholder="Any special requests or preferences...",
+        key="other_requirements"
+    )
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("← Back", key="back_to_username_from_lifestyle"):
+            st.session_state.step = 0
+            st.rerun()
+
+    with col2:
+        if st.button("Next Step", key="next_to_questionnaire"):
+            if not desired_location.strip():  # Check if the input is empty or only whitespace
+                st.warning("Please enter your desired location before proceeding.")
+            else:
+                st.session_state.user_requirements["cleanliness"] = cleanliness
+                st.session_state.user_requirements["smoking"] = smoking
+                st.session_state.user_requirements["pets"] = pets
+                st.session_state.user_requirements["desired_location"] = desired_location
+                st.session_state.user_requirements["other_requirements"] = other_requirements
+                st.session_state.step = 2  # Proceed to questionnaire
+                st.rerun()
+
+
+# --- STEP 2: QUESTIONNAIRE ---
+elif st.session_state.step == 2:
+    st.header("Step 2: Complete Your Attitudinal Questionnaire")
+
+    st.write(f"Signed in as: **{st.session_state.username}**")
+
+    user_personality = {}
     submit_step1 = False
 
     # Loop through each domain and collect user responses
@@ -114,23 +161,23 @@ elif st.session_state.step == 1:
             if "(reverse)" in q:
                 score = 6 - score
             domain_scores.append(score)
-        user_responses[domain] = sum(domain_scores)/len(domain_scores)
+        user_personality[domain] = sum(domain_scores)/len(domain_scores)
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("← Back", key="back_to_username"):
-            st.session_state.step = 0
+        if st.button("← Back", key="back_to_lifestyle"):
+            st.session_state.step = 1
             st.rerun()
 
     with col2:
         if st.button("Next Step", key="next_to_description"):
-            st.session_state.user_responses = user_responses
-            st.session_state.step = 2
+            st.session_state.user_personality = user_personality
+            st.session_state.step = 3
             st.rerun()
 
-# --- STEP 2: FREE TEXT DESCRIPTION ---
-elif st.session_state.step == 2:
-    st.header("Step 2: Tell Us About Your Values")
+# --- STEP 3: FREE TEXT DESCRIPTION ---
+elif st.session_state.step == 3:
+    st.header("Step 3: Tell Us About Your Values")
 
     st.write("Please describe yourself, your lifestyle, and what you're looking for in a co-living situation:")
 
@@ -162,7 +209,7 @@ elif st.session_state.step == 2:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("← Back", key="back_to_questionnaire"):
-            st.session_state.step = 1
+            st.session_state.step = 2
             st.rerun()
 
     with col2:
@@ -184,36 +231,41 @@ elif st.session_state.step == 2:
                 try:
                     save_path = os.path.join("..", "data", "save_mock_profiles.csv")
                     row = {
+                        "timestamp": datetime.utcnow().isoformat(),
                         "username": st.session_state.username,
+                        "cleanliness": st.session_state.user_requirements.get("cleanliness"),
+                        "smoking": st.session_state.user_requirements.get("smoking"),
+                        "pets": st.session_state.user_requirements.get("pets"),
+                        "desired_location": st.session_state.user_requirements.get("desired_location"),
+                        "other_requirements": st.session_state.user_requirements.get("other_requirements"),
                         "living_together": living_together,
                         "decision_making": decision_making,
-                        "personal_contribution": personal_contribution,
-                        "timestamp": datetime.utcnow().isoformat()
+                        "personal_contribution": personal_contribution
                     }
-                    row.update({k: float(v) for k, v in st.session_state.user_responses.items()})
+                    row.update({k: float(v) for k, v in st.session_state.user_personality.items()})
                     pd.DataFrame([row]).to_csv(save_path, mode="a",
                                               header=not os.path.exists(save_path), index=False)
 
                 except Exception as e:
                     st.error(f"Failed to save profile: {e}")
 
-                st.session_state.user_description = "\n\n".join([
+                st.session_state.user_values = "\n\n".join([
                     f"Living together: {living_together}",
                     f"Decision-making: {decision_making}",
                     f"Personal contribution: {personal_contribution}"
                 ])
-                st.session_state.step = 3
+                st.session_state.step = 4
                 st.rerun()
 
-# --- STEP 3: SHOW MATCHES ---
+# --- STEP 4: SHOW MATCHES ---
 else:
-    st.header("Step 3: Your Matches")
+    st.header("Step 4: Your Matches")
 
     # Load profiles
     profiles_df = pd.read_csv("../data/profiles.csv")
 
     # Calculate value-based similarity
-    user_vector = np.array([float(st.session_state.user_responses[domain])
+    user_vector = np.array([float(st.session_state.user_personality[domain])
                            for domain in questions.keys()])
     profile_vectors = profiles_df[list(questions.keys())].astype(float).values
     value_similarities = cosine_similarity(user_vector.reshape(1, -1), profile_vectors)[0]
@@ -231,7 +283,7 @@ else:
 
     if st.button("Start Over", key="start_over"):
         st.session_state.step = 0
-        st.session_state.user_responses = {}
-        st.session_state.user_description = ""
+        st.session_state.user_personality = {}
+        st.session_state.user_values = ""
         st.session_state.username = ""
         st.rerun()
