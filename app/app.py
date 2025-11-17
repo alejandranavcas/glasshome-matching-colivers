@@ -56,11 +56,26 @@ questions = {
     ]
 }
 
+st.image("images/header-glasshome.png", width='stretch')
 st.title("Co-Living Compatibility Matching POC")
 
 # --- STEP 0: USERNAME ---
 if st.session_state.step == 0:
     st.header("Welcome — Create a Username")
+    st.markdown("""Discover Yourself. Connect with Others.
+
+Unlock deeper insights about your personality, values, and preferences—and find your perfect community match.
+
+Our app helps you:
+- Understand Yourself: Explore your unique traits and what drives you.
+- Connect Meaningfully: Meet like-minded individuals who share your values.
+- Build Better Communities: Create groups that truly fit, not just click.
+
+Start your journey today and see how understanding yourself can transform the way you connect with others.
+
+
+Your Privacy Matters: All your data is securely stored in our private databases and never shared without your consent. You are in control of your information at every step.
+    """)
     st.write("Choose a username to identify yourself in matches.")
 
     username = st.text_input("Username", value=st.session_state.username, max_chars=30,
