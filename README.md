@@ -31,5 +31,6 @@
 ## Run the streamlit app
 
 ```bash
+cd app
 streamlit run app.py
 ```
