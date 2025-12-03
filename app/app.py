@@ -4,6 +4,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
 from datetime import datetime
+from embeddings import get_embeddings
+import ast
+import json
 
 # Initialize session state variables
 if 'step' not in st.session_state:
@@ -296,6 +299,13 @@ elif st.session_state.step == 3:
             if errors:
                 st.error("Please fix the following before continuing:\n" + "\n".join(errors))
             else:
+                # Generate embeddings for the three texts
+                texts_to_embed = [living_together, decision_making, personal_contribution]
+                embeddings = get_embeddings(texts_to_embed)
+
+                # Save the embeddings for later similarity comparisons
+                st.session_state.user_text_embeddings = [arr.tolist() for arr in embeddings]
+
                 # Save + continue if valid
                 try:
                     save_path = os.path.join("..", "data", "save_mock_profiles.csv")
@@ -309,7 +319,10 @@ elif st.session_state.step == 3:
                         "other_requirements": st.session_state.user_requirements.get("other_requirements"),
                         "living_together": living_together,
                         "decision_making": decision_making,
-                        "personal_contribution": personal_contribution
+                        "personal_contribution": personal_contribution,
+                        "living_together_embedding": embeddings[0].tolist(),
+                        "decision_making_embedding": embeddings[1].tolist(),
+                        "personal_contribution_embedding": embeddings[2].tolist()
                     }
                     row.update({k: float(v) for k, v in st.session_state.user_personality.items()})
                     pd.DataFrame([row]).to_csv(save_path, mode="a",
@@ -358,35 +371,106 @@ else:
         st.stop()
 
     # -------------------------------
-    # CALCULATE SIMILARITY ON FILTERED PROFILES
+    # CALCULATE PERSONALITY SIMILARITY ON FILTERED PROFILES
     # -------------------------------
     # Calculate value-based similarity
 
     # Get the personality traits from session state
-    user_vector = np.array([float(st.session_state.user_personality[trait]) for trait in bfi_scoring.keys()])
+    user_vector_personality = np.array([float(st.session_state.user_personality[trait]) for trait in bfi_scoring.keys()])
 
     # Only use the filtered profiles for similarity
     profile_vectors = filtered_df[list(bfi_scoring.keys())].astype(float).values
 
-    value_similarities = cosine_similarity(user_vector.reshape(1, -1), profile_vectors)[0]
+    personality_similarities = cosine_similarity(user_vector_personality.reshape(1, -1), profile_vectors)[0]
 
-    # Text similarity placeholder (you'll need to add text descriptions to profiles.csv)
-    # For now, we'll just use value-based matching
+    # -------------------------------
+    # EMBEDDINGS SIMILARITY
+    # -------------------------------
+    # Helper: robust parser for stored embedding cells (list, JSON string, or Python literal)
+    def _parse_embedding_cell(val):
+        if pd.isna(val):
+            return None
+        if isinstance(val, (list, tuple, np.ndarray)):
+            return np.array(val, dtype=float)
+        if isinstance(val, str):
+            # try python-literal first
+            try:
+                parsed = ast.literal_eval(val)
+                return np.array(parsed, dtype=float)
+            except Exception:
+                pass
+            # try json
+            try:
+                parsed = json.loads(val)
+                return np.array(parsed, dtype=float)
+            except Exception:
+                return None
+        return None
 
-    # Add similarity to the filtered_df
+    # Make sure we have the user's text embeddings saved
+    user_text_embeddings = st.session_state.get("user_text_embeddings", None)
+    if user_text_embeddings is not None:
+        # concat user embeddings into single 1D vector
+        try:
+            user_vec = np.concatenate([np.array(e, dtype=float).ravel() for e in user_text_embeddings])
+        except Exception:
+            user_vec = None
+    else:
+        user_vec = None
+
+    # For each profile in filtered_df, parse its 3 embedding columns and compute cosine similarity
+    emb_sims = []
+    if user_vec is None:
+        emb_sims = [np.nan] * len(filtered_df)
+    else:
+        for _, row in filtered_df.iterrows():
+            e1 = _parse_embedding_cell(row.get("living_together_embedding", None))
+            e2 = _parse_embedding_cell(row.get("decision_making_embedding", None))
+            e3 = _parse_embedding_cell(row.get("personal_contribution_embedding", None))
+            if e1 is None or e2 is None or e3 is None:
+                emb_sims.append(np.nan)
+                continue
+            try:
+                profile_vec = np.concatenate([e1.ravel(), e2.ravel(), e3.ravel()])
+            except Exception:
+                emb_sims.append(np.nan)
+                continue
+            # dimension check
+            if profile_vec.shape != user_vec.shape:
+                emb_sims.append(np.nan)
+                continue
+            sim = float(cosine_similarity(user_vec.reshape(1, -1), profile_vec.reshape(1, -1))[0, 0])
+            emb_sims.append(sim)
+
+    # add as a column to the filtered df
     filtered_df = filtered_df.copy()
-    filtered_df["similarity"] = value_similarities
+    filtered_df["personality_similarity"] = personality_similarities
+    filtered_df["embeddings_similarity"] = emb_sims
+
+    # Optionally create a combined similarity (uncomment / adjust weights if desired)
+    # weight_value = 0.6
+    # weight_embed = 0.4
+    # filtered_df["combined_similarity"] = filtered_df[["personality_similarity", "embeddings_similarity"]].apply(
+    #     lambda r: (weight_value * r["personality_similarity"] + weight_embed * r["embeddings_similarity"])
+    #     if not pd.isna(r["embeddings_similarity"]) else r["personality_similarity"], axis=1
+    # )
 
     # Get top 3 matches
-    top_matches = filtered_df.sort_values(by="similarity", ascending=False).head(3)
+    # choose ranking column for top matches; prefer combined if exists else embeddings_similarity else value similarity
+    rank_col = "combined_similarity" if "combined_similarity" in filtered_df.columns else ("embeddings_similarity" if filtered_df["embeddings_similarity"].notna().any() else "personality_similarity")
+    top_matches = filtered_df.sort_values(by=rank_col, ascending=False).head(3)
 
     # -------------------------------
     # DISPLAY RESULTS
     # -------------------------------
     st.write("## 🧩 Your Top 3 Compatibility Matches")
     st.write(f"Showing matches for **{st.session_state.username}**")
-    st.dataframe(top_matches[["user_id", "user_name", "similarity"]])
-    st.bar_chart(top_matches.set_index("user_name")["similarity"])
+    # show both value similarity and embedding similarity if present
+    display_cols = ["user_id", "user_name", "personality_similarity", "embeddings_similarity"]
+    st.dataframe(top_matches[[c for c in display_cols if c in top_matches.columns]])
+    # chart embeddings similarity if available else value similarity
+    chart_col = "embeddings_similarity" if "embeddings_similarity" in top_matches.columns and top_matches["embeddings_similarity"].notna().any() else "personality_similarity"
+    st.bar_chart(top_matches.set_index("user_name")[chart_col])
 
     if st.button("Start Over", key="start_over"):
         st.session_state.step = 0
