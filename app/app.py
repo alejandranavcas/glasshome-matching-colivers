@@ -99,7 +99,7 @@ st.title("Co-Living Compatibility Matching")
 
 # --- STEP 0: USERNAME ---
 if st.session_state.step == 0:
-    st.header("Welcome — Create a Username")
+    st.header("Welcome to the Co-Living Compatibility Matcher.")
     st.markdown("""Discover Yourself. Connect with Others.
 
 Unlock deeper insights about your personality, values, and preferences—and find your perfect community match.
@@ -128,9 +128,27 @@ Your Privacy Matters: All your data is securely stored in our private databases 
         next_clicked = st.button("Next", key="username_next")
         if next_clicked:
             if len(username.strip()) >= 3:
-                st.session_state.username = username.strip()
-                st.session_state.step = 1
-                st.rerun()
+                # Check uniqueness against saved demographics CSV
+                try:
+                    demo_path = os.path.join("..", "data", "mock_profiles_demographics.csv")
+                    if os.path.exists(demo_path):
+                        df_demo = pd.read_csv(demo_path, usecols=["username"])
+                        # case-insensitive comparison
+                        existing = df_demo["username"].astype(str).str.lower().tolist()
+                        if username.strip().lower() in existing:
+                            st.error("That username is already taken. Please choose a unique username.")
+                            # do not advance
+                            pass
+                        else:
+                            st.session_state.username = username.strip()
+                            st.session_state.step = 1
+                            st.rerun()
+                    else:
+                        st.session_state.username = username.strip()
+                        st.session_state.step = 1
+                        st.rerun()
+                except Exception as e:
+                    st.error(f"Failed to validate username uniqueness: {e}")
             else:
                 st.error("Username must be at least 3 characters.")
 
