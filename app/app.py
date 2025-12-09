@@ -20,6 +20,20 @@ if 'user_personality' not in st.session_state:
 if 'user_values' not in st.session_state:
     st.session_state.user_values = ""
 
+# --- New: initialize demographic fields so text_input(value=...) is safe ---
+if 'fullname' not in st.session_state:
+    st.session_state.fullname = ""
+if 'birthdate' not in st.session_state:
+    st.session_state.birthdate = ""
+if 'nationality' not in st.session_state:
+    st.session_state.nationality = ""
+if 'emailaddress' not in st.session_state:
+    st.session_state.emailaddress = ""
+if 'currentaddress' not in st.session_state:
+    st.session_state.currentaddress = ""
+if 'householdcomposition' not in st.session_state:
+    st.session_state.householdcomposition = ""
+
 # Move questions dictionary to top level scope
 bfi_questions = {
     1: "I am talkative",
@@ -81,7 +95,7 @@ reverse_items = {2, 6, 8, 9, 12, 18, 21, 23, 24, 27, 31, 34, 35, 37, 41, 43}
 ### STREAMLIT APP
 
 st.image("images/header-glasshome.png", width='stretch')
-st.title("Co-Living Compatibility Matching POC")
+st.title("Co-Living Compatibility Matching")
 
 # --- STEP 0: USERNAME ---
 if st.session_state.step == 0:
@@ -121,9 +135,70 @@ Your Privacy Matters: All your data is securely stored in our private databases 
                 st.error("Username must be at least 3 characters.")
 
 
-# --- STEP 1: LIFESTYLE PREFERENCES ---
+# --- STEP 1: DEMOGRAPHICS ---
 elif st.session_state.step == 1:
-    st.header("Step 1: Lifestyle Preferences")
+    st.header("Step 1: Demographic Information")
+
+    st.write(f"Signed in as: **{st.session_state.username}**")
+
+    st.write("Please provide your contact details and demographics. We need this information to save your profile and filter when the matchmaking happens.")
+
+    fullname = st.text_input("Full name:", value=st.session_state.fullname, max_chars=50,
+                             help="Enter your full name.")
+    birthdate = st.text_input("Birth date:", value=st.session_state.birthdate, max_chars=10,
+                             help="Enter your birthdate (DD/MM/YYYY).")
+    nationality = st.text_input("Nationality:", value=st.session_state.nationality, max_chars=30,
+                             help="Enter your nationality.")
+    emailaddress = st.text_input("Email address:", value=st.session_state.emailaddress, max_chars=50,
+                             help="Enter your email address.")
+    currentaddress = st.text_input("Current home address:", value=st.session_state.currentaddress, max_chars=100,
+                             help="Enter your current home address.")
+    householdcomposition = st.text_input("Household composition:", value=st.session_state.householdcomposition, max_chars=100,
+                             help="Enter your household composition (e.g., living alone, with family, roommates).")
+
+
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("← Back", key="back_to_welcome_from_demographics"):
+            st.session_state.step = 0
+            st.rerun()
+
+    with col2:
+        if st.button("Next Step", key="next_to_lifestyle"):
+            # Save demographic entries to session_state
+            st.session_state.fullname = fullname
+            st.session_state.birthdate = birthdate
+            st.session_state.nationality = nationality
+            st.session_state.emailaddress = emailaddress
+            st.session_state.currentaddress = currentaddress
+            st.session_state.householdcomposition = householdcomposition
+
+            # Attempt to persist demographics to CSV
+            try:
+                save_path = os.path.join("..", "data", "mock_profiles_demographics.csv")
+                row = {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "username": st.session_state.username,
+                    "fullname": fullname,
+                    "birthdate": birthdate,
+                    "nationality": nationality,
+                    "emailaddress": emailaddress,
+                    "currentaddress": currentaddress,
+                    "householdcomposition": householdcomposition
+                }
+                pd.DataFrame([row]).to_csv(save_path, mode="a",
+                                           header=not os.path.exists(save_path), index=False)
+            except Exception as e:
+                st.error(f"Failed to save demographics: {e}")
+            else:
+                st.session_state.step = 2
+                st.rerun()
+
+
+# --- STEP 2: LIFESTYLE PREFERENCES ---
+elif st.session_state.step == 2:
+    st.header("Step 2: Lifestyle Preferences")
 
     st.write(f"Signed in as: **{st.session_state.username}**")
 
@@ -168,7 +243,7 @@ elif st.session_state.step == 1:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("← Back", key="back_to_username_from_lifestyle"):
-            st.session_state.step = 0
+            st.session_state.step = 1
             st.rerun()
 
     with col2:
@@ -181,13 +256,13 @@ elif st.session_state.step == 1:
                 st.session_state.user_requirements["pets"] = pets
                 st.session_state.user_requirements["desired_location"] = desired_location
                 st.session_state.user_requirements["other_requirements"] = other_requirements
-                st.session_state.step = 2  # Proceed to questionnaire
+                st.session_state.step = 3  # Proceed to questionnaire
                 st.rerun()
 
 
-# --- STEP 2: QUESTIONNAIRE ---
-elif st.session_state.step == 2:
-    st.header("Step 2: Complete Your Attitudinal Questionnaire")
+# --- STEP 3: QUESTIONNAIRE ---
+elif st.session_state.step == 3:
+    st.header("Step 3: Complete Your Attitudinal Questionnaire")
 
     st.write(f"Signed in as: **{st.session_state.username}**")
 
@@ -238,18 +313,18 @@ elif st.session_state.step == 2:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("← Back", key="back_to_lifestyle"):
-            st.session_state.step = 1
+            st.session_state.step = 2
             st.rerun()
 
     with col2:
         if st.button("Next Step", key="next_to_description"):
             st.session_state.user_personality = user_personality
-            st.session_state.step = 3
+            st.session_state.step = 4
             st.rerun()
 
-# --- STEP 3: FREE TEXT DESCRIPTION ---
-elif st.session_state.step == 3:
-    st.header("Step 3: Tell Us About Your Values")
+# --- STEP 4: FREE TEXT DESCRIPTION ---
+elif st.session_state.step == 4:
+    st.header("Step 4: Tell Us About Your Values")
 
     st.write("Please describe yourself, your lifestyle, and what you're looking for in a co-living situation:")
 
@@ -281,7 +356,7 @@ elif st.session_state.step == 3:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("← Back", key="back_to_questionnaire"):
-            st.session_state.step = 2
+            st.session_state.step = 3
             st.rerun()
 
     with col2:
@@ -336,12 +411,12 @@ elif st.session_state.step == 3:
                     f"Decision-making: {decision_making}",
                     f"Personal contribution: {personal_contribution}"
                 ])
-                st.session_state.step = 4
+                st.session_state.step = 5
                 st.rerun()
 
-# --- STEP 4: SHOW MATCHES ---
+# --- STEP 5: SHOW MATCHES ---
 else:
-    st.header("Step 4: Your Matches")
+    st.header("Step 5: Your Matches")
 
     # Load profiles
     profiles_df = pd.read_csv("../data/profiles.csv")
