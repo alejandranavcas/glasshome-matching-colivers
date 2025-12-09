@@ -4,7 +4,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
 from datetime import datetime
-from embeddings import get_embeddings
 import ast
 import json
 
@@ -394,7 +393,10 @@ elif st.session_state.step == 4:
             else:
                 # Generate embeddings for the three texts
                 texts_to_embed = [living_together, decision_making, personal_contribution]
-                embeddings = get_embeddings(texts_to_embed)
+                # lazy import to avoid expensive work during page load
+                from embeddings import get_embeddings
+                with st.spinner("Generating semantic embeddings… this may take a few seconds"):
+                    embeddings = get_embeddings(texts_to_embed)
 
                 # Save the embeddings for later similarity comparisons
                 st.session_state.user_text_embeddings = [arr.tolist() for arr in embeddings]
