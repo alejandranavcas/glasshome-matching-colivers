@@ -219,13 +219,63 @@ elif st.session_state.step == 2:
 
     st.write(f"Signed in as: **{st.session_state.username}**")
 
-    # Cleanliness standard
-    cleanliness = st.radio(
-        "Choose your cleanliness standard:",
-        ("Very tidy", "Tidy", "Relaxed"),
-        index=1,
+    st.write(f"**Relational & Social Interaction Preferences**")
+
+    # Contact with neighbours
+    contact_with_neighbours_options = ["Very high", "Moderate", "Low","Only when necessary"]
+    contact_with_neighbours = st.multiselect(
+        "How much social contact do you prefer with neighbours? (you may select multiple):",
+        options=contact_with_neighbours_options,
+        default=[],
+        key="contact_with_neighbours"
+    )
+
+    # Mix of household members
+    mix_of_household_options = ["Important", "Neutral", "Not important"]
+    mix_of_household = st.multiselect(
+        "How important is it for you that the community includes a diverse mix of household types (e.g., singles, couples, families with children, older adults)? (you may select multiple):",
+        options=mix_of_household_options,
+        default=[],
+        key="mix_of_household"
+    )
+
+    # Degree of shared responsability
+    degree_shared_responsibility_options = ["Strong commitment; active participation", "Moderate involvement", "Occasional participation","Minimal involvement"]
+    degree_shared_responsibility = st.multiselect(
+        "What degree of shared responsibility do you want? (you may select multiple):",
+        options=degree_shared_responsibility_options,
+        default=[],
+        key="degree_shared_responsibility"
+    )
+
+    # Frequency of shared activities
+    frequency_shared_activities_options = ["Daily", "Several times a week", "Once a week","Occasionally","Rarely"]
+    frequency_shared_activities = st.multiselect(
+        "How often would you like shared activities (e.g., shared meals, events)? (you may select multiple):",
+        options=frequency_shared_activities_options,
+        default=[],
+        key="frequency_shared_activities"
+    )
+
+    # Communal activities
+    communal_activities_options = ["Shared meals", "Gardening", "Childcare", "Cultural/Social events", "Maintenance work"]
+    communal_activities = st.multiselect(
+        "Which communal activities are important to you? (you may select multiple):",
+        options=communal_activities_options,
+        default=[],
+        key="communal_activities"
+    )
+
+    # Cleanliness standard (allow multiple selections)
+    cleanliness_options = ["Very tidy", "Tidy", "Relaxed"]
+    cleanliness = st.multiselect(
+        "Choose your cleanliness standard (you may select multiple):",
+        options=cleanliness_options,
+        default=[],
         key="cleanliness"
     )
+
+    st.write(f"**Lifestyle & Practical Needs**")
 
     # Smoking/vaping preference
     smoking = st.radio(
@@ -268,6 +318,13 @@ elif st.session_state.step == 2:
             if not desired_location.strip():  # Check if the input is empty or only whitespace
                 st.warning("Please enter your desired location before proceeding.")
             else:
+                # Save new lifestyle preferences as well
+                st.session_state.user_requirements["contact_with_neighbours"] = contact_with_neighbours
+                st.session_state.user_requirements["mix_of_household"] = mix_of_household
+                st.session_state.user_requirements["degree_shared_responsibility"] = degree_shared_responsibility
+                st.session_state.user_requirements["frequency_shared_activities"] = frequency_shared_activities
+                st.session_state.user_requirements["communal_activities"] = communal_activities
+
                 st.session_state.user_requirements["cleanliness"] = cleanliness
                 st.session_state.user_requirements["smoking"] = smoking
                 st.session_state.user_requirements["pets"] = pets
@@ -407,6 +464,11 @@ elif st.session_state.step == 4:
                     row = {
                         "timestamp": datetime.utcnow().isoformat(),
                         "username": st.session_state.username,
+                        "contact_with_neighbours": st.session_state.user_requirements.get("contact_with_neighbours"),
+                        "mix_of_household": st.session_state.user_requirements.get("mix_of_household"),
+                        "degree_shared_responsibility": st.session_state.user_requirements.get("degree_shared_responsibility"),
+                        "frequency_shared_activities": st.session_state.user_requirements.get("frequency_shared_activities"),
+                        "communal_activities": st.session_state.user_requirements.get("communal_activities"),
                         "cleanliness": st.session_state.user_requirements.get("cleanliness"),
                         "smoking": st.session_state.user_requirements.get("smoking"),
                         "pets": st.session_state.user_requirements.get("pets"),
@@ -446,13 +508,39 @@ else:
     # -------------------------------
     user_req = st.session_state.user_requirements
 
-    # Filter by exact match on categorical fields
-    filtered_df = profiles_df[
-        (profiles_df["cleanliness"] == user_req["cleanliness"]) &
-        (profiles_df["smoking"] == user_req["smoking"]) &
-        (profiles_df["pets"] == user_req["pets"]) &
-        (profiles_df["desired_location"] == user_req["desired_location"])
-    ]
+    # Build a boolean mask to handle multi-select fields
+    df = profiles_df.copy()
+    mask = pd.Series(True, index=df.index)
+
+    # helper to apply list-or-scalar filtering
+    def _apply_pref_mask(field_name, current_mask):
+        """Apply preference filter to current_mask and return updated mask."""
+        req = user_req.get(field_name, None)
+        if not req:
+            return current_mask
+        if isinstance(req, (list, tuple)):
+            if len(req) > 0:
+                return current_mask & df[field_name].isin(req)
+            return current_mask
+        return current_mask & (df[field_name] == req)
+
+    # apply for the multi-select lifestyle fields
+    for field in [
+        "cleanliness",
+        "contact_with_neighbours",
+        "mix_of_household",
+        "degree_shared_responsibility",
+        "frequency_shared_activities",
+        "communal_activities"
+    ]:
+        mask = _apply_pref_mask(field, mask)
+
+    # Apply the remaining exact-match filters (smoking, pets, desired_location)
+    mask &= (df["smoking"] == user_req.get("smoking")) & \
+            (df["pets"] == user_req.get("pets")) & \
+            (df["desired_location"] == user_req.get("desired_location"))
+
+    filtered_df = df[mask]
 
     # If no profiles match the hard filters:
     if filtered_df.empty:
