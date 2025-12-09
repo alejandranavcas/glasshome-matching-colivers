@@ -543,12 +543,12 @@ else:
     filtered_df["embeddings_similarity"] = emb_sims
 
     # Optionally create a combined similarity (uncomment / adjust weights if desired)
-    # weight_value = 0.6
-    # weight_embed = 0.4
-    # filtered_df["combined_similarity"] = filtered_df[["personality_similarity", "embeddings_similarity"]].apply(
-    #     lambda r: (weight_value * r["personality_similarity"] + weight_embed * r["embeddings_similarity"])
-    #     if not pd.isna(r["embeddings_similarity"]) else r["personality_similarity"], axis=1
-    # )
+    weight_value = 0.5
+    weight_embed = 0.5
+    filtered_df["combined_similarity"] = filtered_df[["personality_similarity", "embeddings_similarity"]].apply(
+        lambda r: (weight_value * r["personality_similarity"] + weight_embed * r["embeddings_similarity"])
+        if not pd.isna(r["embeddings_similarity"]) else r["personality_similarity"], axis=1
+        )
 
     # Get top 3 matches
     # choose ranking column for top matches; prefer combined if exists else embeddings_similarity else value similarity
@@ -561,10 +561,10 @@ else:
     st.write("## 🧩 Your Top 3 Compatibility Matches")
     st.write(f"Showing matches for **{st.session_state.username}**")
     # show both value similarity and embedding similarity if present
-    display_cols = ["user_id", "user_name", "personality_similarity", "embeddings_similarity"]
+    display_cols = ["user_name", "personality_similarity", "embeddings_similarity","combined_similarity"]
     st.dataframe(top_matches[[c for c in display_cols if c in top_matches.columns]])
-    # chart embeddings similarity if available else value similarity
-    chart_col = "embeddings_similarity" if "embeddings_similarity" in top_matches.columns and top_matches["embeddings_similarity"].notna().any() else "personality_similarity"
+    # chart combined similarity if available else personality similarity
+    chart_col = "combined_similarity" if "combined_similarity" in top_matches.columns and top_matches["combined_similarity"].notna().any() else "personality_similarity"
     st.bar_chart(top_matches.set_index("user_name")[chart_col])
 
     if st.button("Start Over", key="start_over"):
