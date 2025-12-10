@@ -330,15 +330,17 @@ elif st.session_state.step == 2:
                 st.session_state.user_requirements["pets"] = pets
                 st.session_state.user_requirements["desired_location"] = desired_location
                 st.session_state.user_requirements["other_requirements"] = other_requirements
-                st.session_state.step = 3  # Proceed to questionnaire
+                st.session_state.step = 3  # Proceed to personality traits step
                 st.rerun()
 
 
-# --- STEP 3: QUESTIONNAIRE ---
+# --- STEP 3: PERSONALITY TRAITS ---
 elif st.session_state.step == 3:
-    st.header("Step 3: Complete Your Attitudinal Questionnaire")
+    st.header("Step 3: Personality Traits Questionnaire")
 
     st.write(f"Signed in as: **{st.session_state.username}**")
+
+    st.write(f"This part of the questionnaire helps map your personality, so that we can match you to the appropriate people. Indicate whether you agree or disagree with the following statements.")
 
     user_personality_questions = {}
     submit_step1 = False
@@ -400,7 +402,9 @@ elif st.session_state.step == 3:
 elif st.session_state.step == 4:
     st.header("Step 4: Tell Us About Your Values")
 
-    st.write("Please describe yourself, your lifestyle, and what you're looking for in a co-living situation:")
+    st.write(f"Signed in as: **{st.session_state.username}**")
+
+    st.write("Reflect about your values for community living. Please, answer to these questions that make you reflect on how you imagine to live in community. We will infer which values you express most strongly.")
 
     # Three separate prompts
     st.markdown("**Living together**: Imagine you’re living in a shared community or co-housing project. What matters most to you in how people live together?")
