@@ -213,12 +213,222 @@ elif st.session_state.step == 1:
                 st.rerun()
 
 
-# --- STEP 2: LIFESTYLE PREFERENCES ---
+# --- STEP 2: PRACTICAL REQUIREMENTS ---
 elif st.session_state.step == 2:
-    st.header("Step 2: Lifestyle Preferences")
-
+    st.header("Step 2: Practical Requirements")
     st.write(f"Signed in as: **{st.session_state.username}**")
+    st.write(f"These are the requirements you have for your desired community. Please indicate your choices.")
+    st.write(f"**Architectural and Physical Space Preferences**")
 
+    # Desired Location
+    desired_location = st.text_input(
+        "Desired location (city, neighborhood, or region):",
+        placeholder="e.g., Germany, Berlin, Kreuzberg",
+        key="desired_location"
+    )
+
+    # Size of community
+    size_of_community_options = ["Small (<10 people)", "Medium (10–40)", "Large (40–100)","Extra-large (>100)"]
+    size_of_community = st.multiselect(
+        "What type of community size do you prefer? (you may select multiple):",
+        options=size_of_community_options,
+        default=[],
+        key="size_of_community"
+    )
+
+    # Regime of sharing
+    regime_of_sharing_options = ["Shared extra spaces (gardens, workshops, guest rooms, garage)", "Shared essential spaces (kitchen, laundry, dining rooms)", "Minimal/no shared spaces"]
+    regime_of_sharing = st.multiselect(
+        "Which regime of sharing do you prefer? (you may select multiple):",
+        options=regime_of_sharing_options,
+        default=[],
+        key="regime_of_sharing"
+    )
+
+    # Physical environment
+    physical_environment_options = ["Urban / city-centre", "Suburban", "Rural / nature-based","Eco-village style","Architect-designed","Self-built eco-community","Renovated/retrofit buildings"]
+    physical_environment = st.multiselect(
+        "Which types of physical environment appeal to you? (you may select multiple):",
+        options=physical_environment_options,
+        default=[],
+        key="physical_environment"
+    )
+
+    # Private dwelling
+    private_dwelling_options = ["Full kitchen", "Kitchenette","Private outdoor space","Full bathroom","Guest room","Other:"]
+    private_dwelling = st.multiselect(
+        "What features do you require in your private dwelling? (you may select multiple):",
+        options=private_dwelling_options,
+        default=[],
+        key="private_dwelling"
+    )
+
+    st.write(f"**Operational Preferences: Daily Governance & Management**")
+
+    # Governance style
+    governance_style_options = ["Self-managed (active involvement, working groups)", "Semi-managed (mix of professionals and residents)","Professionally managed","No preference"]
+    governance_style = st.multiselect(
+        "What governance style do you prefer? (you may select multiple):",
+        options=governance_style_options,
+        default=[],
+        key="governance_style"
+    )
+
+    # Cleanliness standard importance
+    st.markdown("**How important is each of the following to you?**")
+
+    st.write("Cleanliness standard:")
+    st.markdown("""
+        <div style="display:flex; justify-content:space-between; font-size:0.85em; color:gray;">
+            <span>Not important<br>at all</span>
+            <span>Little<br>importance</span>
+            <span>Neutral</span>
+            <span>Important</span>
+            <span>Very<br>important</span>
+        </div>
+    """, unsafe_allow_html=True)
+    cleanliness_importance = st.slider(
+        "",
+        min_value=1,
+        max_value=5,
+        value=3,
+        key="cleanliness_importance"
+    )
+
+    st.write("Quiet hours:")
+    st.markdown("""
+        <div style="display:flex; justify-content:space-between; font-size:0.85em; color:gray;">
+            <span>Not important<br>at all</span>
+            <span>Little<br>importance</span>
+            <span>Neutral</span>
+            <span>Important</span>
+            <span>Very<br>important</span>
+        </div>
+    """, unsafe_allow_html=True)
+    quiet_hours_importance = st.slider(
+        "",
+        min_value=1,
+        max_value=5,
+        value=3,
+        key="quiet_hours_importance"
+    )
+
+    st.write("Booking system (for shared spaces):")
+    st.markdown("""
+        <div style="display:flex; justify-content:space-between; font-size:0.85em; color:gray;">
+            <span>Not important<br>at all</span>
+            <span>Little<br>importance</span>
+            <span>Neutral</span>
+            <span>Important</span>
+            <span>Very<br>important</span>
+        </div>
+    """, unsafe_allow_html=True)
+    booking_system_importance = st.slider(
+        "",
+        min_value=1,
+        max_value=5,
+        value=3,
+        key="booking_system_importance"
+    )
+
+    st.write("Guest policy:")
+    st.markdown("""
+        <div style="display:flex; justify-content:space-between; font-size:0.85em; color:gray;">
+            <span>Not important<br>at all</span>
+            <span>Little<br>importance</span>
+            <span>Neutral</span>
+            <span>Important</span>
+            <span>Very<br>important</span>
+        </div>
+    """, unsafe_allow_html=True)
+    guest_policy_importance = st.slider(
+        "",
+        min_value=1,
+        max_value=5,
+        value=3,
+        key="guest_policy_importance"
+    )
+
+    st.write("Pet policy:")
+    st.markdown("""
+        <div style="display:flex; justify-content:space-between; font-size:0.85em; color:gray;">
+            <span>Not important<br>at all</span>
+            <span>Little<br>importance</span>
+            <span>Neutral</span>
+            <span>Important</span>
+            <span>Very<br>important</span>
+        </div>
+    """, unsafe_allow_html=True)
+    pet_policy_importance = st.slider(
+        "",
+        min_value=1,
+        max_value=5,
+        value=3,
+        key="pet_policy_importance"
+    )
+
+    st.write(f"**Institutional Set-Up: Financial & Legal Expectations**")
+
+    # Legal structure
+    legal_structure_options = ["Ownership (private unit + share of common areas)", "Cooperative ownership", "Long-term rental","Rental with option to buy","Other:"]
+    legal_structure = st.multiselect(
+        "What legal structure do you prefer for the community? (you may select multiple):",
+        options=legal_structure_options,
+        default=[],
+        key="legal_structure"
+    )
+
+    # Monthly budget
+    monthly_budget = st.text_area(
+        "Maximum monthly housing budget: (provide range selector)",
+        placeholder="Input your budget range here...",
+        key="monthly_budget"
+    )
+
+    # Other practical requirements
+    other_practical_requirements = st.text_area(
+        "Other practical requirements (optional):",
+        placeholder="Any special requests or preferences...",
+        key="other_practical_requirements"
+    )
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("← Back", key="back_to_username_from_practical_requirements"):
+            st.session_state.step = 1
+            st.rerun()
+
+    with col2:
+        if st.button("Next Step", key="next_to_lifestyle"):
+            if not desired_location.strip():  # Check if the input is empty or only whitespace
+                st.warning("Please enter your desired location before proceeding.")
+            else:
+                # Save new lifestyle preferences as well
+                st.session_state.user_requirements["desired_location"] = desired_location
+                st.session_state.user_requirements["size_of_community"] = size_of_community
+                st.session_state.user_requirements["regime_of_sharing"] = regime_of_sharing
+                st.session_state.user_requirements["physical_environment"] = physical_environment
+                st.session_state.user_requirements["private_dwelling"] = private_dwelling
+
+                st.session_state.user_requirements["governance_style"] = governance_style
+                st.session_state.user_requirements["cleanliness_importance"] = cleanliness_importance
+                st.session_state.user_requirements["quiet_hours_importance"] = quiet_hours_importance
+                st.session_state.user_requirements["booking_system_importance"] = booking_system_importance
+                st.session_state.user_requirements["guest_policy_importance"] = guest_policy_importance
+                st.session_state.user_requirements["pet_policy_importance"] = pet_policy_importance
+
+                st.session_state.user_requirements["legal_structure"] = legal_structure
+                st.session_state.user_requirements["monthly_budget"] = monthly_budget
+
+                st.session_state.user_requirements["other_practical_requirements"] = other_practical_requirements
+                st.session_state.step = 3  # Proceed to lifestyle preferences step
+                st.rerun()
+
+
+# --- STEP 3: LIFESTYLE PREFERENCES ---
+elif st.session_state.step == 3:
+    st.header("Step 3: Lifestyle Preferences")
+    st.write(f"Signed in as: **{st.session_state.username}**")
     st.write(f"**Relational & Social Interaction Preferences**")
 
     # Contact with neighbours
@@ -266,15 +476,6 @@ elif st.session_state.step == 2:
         key="communal_activities"
     )
 
-    # Cleanliness standard (allow multiple selections)
-    cleanliness_options = ["Very tidy", "Tidy", "Relaxed"]
-    cleanliness = st.multiselect(
-        "Choose your cleanliness standard (you may select multiple):",
-        options=cleanliness_options,
-        default=[],
-        key="cleanliness"
-    )
-
     st.write(f"**Lifestyle & Practical Needs**")
 
     # Smoking/vaping preference
@@ -293,13 +494,6 @@ elif st.session_state.step == 2:
         key="pets"
     )
 
-    # Desired Location
-    desired_location = st.text_input(
-        "Desired location (city, neighborhood, or region):",
-        placeholder="e.g., Germany, Berlin, Kreuzberg",
-        key="desired_location"
-    )
-
     # Other Requirements
     other_requirements = st.text_area(
         "Other requirements (optional):",
@@ -309,37 +503,29 @@ elif st.session_state.step == 2:
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("← Back", key="back_to_username_from_lifestyle"):
-            st.session_state.step = 1
+        if st.button("← Back", key="back_to_practical_requirements_from_lifestyle"):
+            st.session_state.step = 2
             st.rerun()
 
     with col2:
         if st.button("Next Step", key="next_to_questionnaire"):
-            if not desired_location.strip():  # Check if the input is empty or only whitespace
-                st.warning("Please enter your desired location before proceeding.")
-            else:
-                # Save new lifestyle preferences as well
-                st.session_state.user_requirements["contact_with_neighbours"] = contact_with_neighbours
-                st.session_state.user_requirements["mix_of_household"] = mix_of_household
-                st.session_state.user_requirements["degree_shared_responsibility"] = degree_shared_responsibility
-                st.session_state.user_requirements["frequency_shared_activities"] = frequency_shared_activities
-                st.session_state.user_requirements["communal_activities"] = communal_activities
+            st.session_state.user_requirements["contact_with_neighbours"] = contact_with_neighbours
+            st.session_state.user_requirements["mix_of_household"] = mix_of_household
+            st.session_state.user_requirements["degree_shared_responsibility"] = degree_shared_responsibility
+            st.session_state.user_requirements["frequency_shared_activities"] = frequency_shared_activities
+            st.session_state.user_requirements["communal_activities"] = communal_activities
 
-                st.session_state.user_requirements["cleanliness"] = cleanliness
-                st.session_state.user_requirements["smoking"] = smoking
-                st.session_state.user_requirements["pets"] = pets
-                st.session_state.user_requirements["desired_location"] = desired_location
-                st.session_state.user_requirements["other_requirements"] = other_requirements
-                st.session_state.step = 3  # Proceed to personality traits step
-                st.rerun()
+            st.session_state.user_requirements["smoking"] = smoking
+            st.session_state.user_requirements["pets"] = pets
+            st.session_state.user_requirements["other_requirements"] = other_requirements
+            st.session_state.step = 4  # Proceed to personality traits step
+            st.rerun()
 
 
-# --- STEP 3: PERSONALITY TRAITS ---
-elif st.session_state.step == 3:
-    st.header("Step 3: Personality Traits Questionnaire")
-
+# --- STEP 4: PERSONALITY TRAITS ---
+elif st.session_state.step == 4:
+    st.header("Step 4: Personality Traits Questionnaire")
     st.write(f"Signed in as: **{st.session_state.username}**")
-
     st.write(f"This part of the questionnaire helps map your personality, so that we can match you to the appropriate people. Indicate whether you agree or disagree with the following statements.")
 
     user_personality_questions = {}
@@ -389,21 +575,19 @@ elif st.session_state.step == 3:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("← Back", key="back_to_lifestyle"):
-            st.session_state.step = 2
+            st.session_state.step = 3
             st.rerun()
 
     with col2:
         if st.button("Next Step", key="next_to_description"):
             st.session_state.user_personality = user_personality
-            st.session_state.step = 4
+            st.session_state.step = 5
             st.rerun()
 
-# --- STEP 4: FREE TEXT DESCRIPTION ---
-elif st.session_state.step == 4:
-    st.header("Step 4: Tell Us About Your Values")
-
+# --- STEP 5: FREE TEXT DESCRIPTION ---
+elif st.session_state.step == 5:
+    st.header("Step 5: Tell Us About Your Values")
     st.write(f"Signed in as: **{st.session_state.username}**")
-
     st.write("Reflect about your values for community living. Please, answer to these questions that make you reflect on how you imagine to live in community. We will infer which values you express most strongly.")
 
     # Three separate prompts
@@ -433,8 +617,8 @@ elif st.session_state.step == 4:
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("← Back", key="back_to_questionnaire"):
-            st.session_state.step = 3
+        if st.button("← Back", key="back_to_personality_questionnaire"):
+            st.session_state.step = 4
             st.rerun()
 
     with col2:
@@ -468,16 +652,29 @@ elif st.session_state.step == 4:
                     row = {
                         "timestamp": datetime.utcnow().isoformat(),
                         "username": st.session_state.username,
+
+                        "desired_location": st.session_state.user_requirements.get("desired_location"),
+                        "size_of_community": st.session_state.user_requirements.get("size_of_community"),
+                        "regime_of_sharing": st.session_state.user_requirements.get("regime_of_sharing"),
+                        "physical_environment": st.session_state.user_requirements.get("physical_environment"),
+                        "private_dwelling": st.session_state.user_requirements.get("private_dwelling"),
+                        "governance_style": st.session_state.user_requirements.get("governance_style"),
+
+                        "cleanliness_importance": st.session_state.user_requirements.get("cleanliness_importance"),
+                        "quiet_hours_importance": st.session_state.user_requirements.get("quiet_hours_importance"),
+                        "booking_system_importance": st.session_state.user_requirements.get("booking_system_importance"),
+                        "guest_policy_importance": st.session_state.user_requirements.get("guest_policy_importance"),
+                        "pet_policy_importance": st.session_state.user_requirements.get("pet_policy_importance"),
+
                         "contact_with_neighbours": st.session_state.user_requirements.get("contact_with_neighbours"),
                         "mix_of_household": st.session_state.user_requirements.get("mix_of_household"),
                         "degree_shared_responsibility": st.session_state.user_requirements.get("degree_shared_responsibility"),
                         "frequency_shared_activities": st.session_state.user_requirements.get("frequency_shared_activities"),
                         "communal_activities": st.session_state.user_requirements.get("communal_activities"),
-                        "cleanliness": st.session_state.user_requirements.get("cleanliness"),
                         "smoking": st.session_state.user_requirements.get("smoking"),
                         "pets": st.session_state.user_requirements.get("pets"),
-                        "desired_location": st.session_state.user_requirements.get("desired_location"),
                         "other_requirements": st.session_state.user_requirements.get("other_requirements"),
+
                         "living_together": living_together,
                         "decision_making": decision_making,
                         "personal_contribution": personal_contribution,
@@ -497,12 +694,12 @@ elif st.session_state.step == 4:
                     f"Decision-making: {decision_making}",
                     f"Personal contribution: {personal_contribution}"
                 ])
-                st.session_state.step = 5
+                st.session_state.step = 6
                 st.rerun()
 
-# --- STEP 5: SHOW MATCHES ---
+# --- STEP 6: SHOW MATCHES ---
 else:
-    st.header("Step 5: Your Matches")
+    st.header("Step 6: Your Matches")
 
     # Load profiles
     profiles_df = pd.read_csv("../data/profiles.csv")
