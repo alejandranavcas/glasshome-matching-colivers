@@ -7,6 +7,10 @@ from datetime import datetime
 import ast
 import json
 
+# Apply UI theme and page configuration
+from ui_settings import apply_theme
+apply_theme()
+
 # Initialize session state variables
 if 'step' not in st.session_state:
     st.session_state.step = 0  # start at step 0 for username
@@ -118,13 +122,13 @@ Your Privacy Matters: All your data is securely stored in our private databases 
     username = st.text_input("Username", value=st.session_state.username, max_chars=30,
                              help="Enter a display name (3+ characters).")
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([7, 1])
     with col1:
         if st.button("Quit", key="quit_button"):
             st.stop()
     with col2:
         # Use a single button call and inspect its boolean return value.
-        next_clicked = st.button("Next", key="username_next")
+        next_clicked = st.button("Next Step →", key="username_next")
         if next_clicked:
             if len(username.strip()) >= 3:
                 # Check uniqueness against saved demographics CSV
@@ -175,14 +179,14 @@ elif st.session_state.step == 1:
 
 
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([7, 1])
     with col1:
         if st.button("← Back", key="back_to_welcome_from_demographics"):
             st.session_state.step = 0
             st.rerun()
 
     with col2:
-        if st.button("Next Step", key="next_to_lifestyle"):
+        if st.button("Next Step →", key="next_to_lifestyle"):
             # Save demographic entries to session_state
             st.session_state.fullname = fullname
             st.session_state.birthdate = birthdate
@@ -392,14 +396,14 @@ elif st.session_state.step == 2:
         key="other_practical_requirements"
     )
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([7, 1])
     with col1:
         if st.button("← Back", key="back_to_username_from_practical_requirements"):
             st.session_state.step = 1
             st.rerun()
 
     with col2:
-        if st.button("Next Step", key="next_to_lifestyle"):
+        if st.button("Next Step →", key="next_to_lifestyle"):
             if not desired_location.strip():  # Check if the input is empty or only whitespace
                 st.warning("Please enter your desired location before proceeding.")
             else:
@@ -501,14 +505,14 @@ elif st.session_state.step == 3:
         key="other_requirements"
     )
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([7, 1])
     with col1:
         if st.button("← Back", key="back_to_practical_requirements_from_lifestyle"):
             st.session_state.step = 2
             st.rerun()
 
     with col2:
-        if st.button("Next Step", key="next_to_questionnaire"):
+        if st.button("Next Step →", key="next_to_questionnaire"):
             st.session_state.user_requirements["contact_with_neighbours"] = contact_with_neighbours
             st.session_state.user_requirements["mix_of_household"] = mix_of_household
             st.session_state.user_requirements["degree_shared_responsibility"] = degree_shared_responsibility
@@ -572,14 +576,14 @@ elif st.session_state.step == 4:
         user_personality[trait] = sum(values) / len(values)
 
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([7, 1])
     with col1:
         if st.button("← Back", key="back_to_lifestyle"):
             st.session_state.step = 3
             st.rerun()
 
     with col2:
-        if st.button("Next Step", key="next_to_description"):
+        if st.button("Next Step →", key="next_to_description"):
             st.session_state.user_personality = user_personality
             st.session_state.step = 5
             st.rerun()
@@ -615,7 +619,7 @@ elif st.session_state.step == 5:
         key="personal_contribution"
     )
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([7, 1])
     with col1:
         if st.button("← Back", key="back_to_personality_questionnaire"):
             st.session_state.step = 4
