@@ -30,6 +30,10 @@ def apply_theme():
             padding-right: 15rem;
         }
 
+        [data-testid="stSidebar"] {
+        display: none;
+        }
+
         /* App base */
         .stApp, .main {
           font-family: 'DM Sans', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial !important;

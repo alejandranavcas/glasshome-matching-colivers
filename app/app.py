@@ -1,8 +1,8 @@
 import streamlit as st
 
-from ui_settings import apply_theme
+from ui.settings import apply_theme
 from state.init import init_session_state
-from pages import STEP_REGISTRY
+from steps import STEP_REGISTRY
 
 
 def main():
