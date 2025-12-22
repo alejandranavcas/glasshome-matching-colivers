@@ -1,5 +1,2 @@
-timestamp,username,fullname,birthdate,nationality,emailaddress,currentaddress,householdcomposition
-2025-12-20T12:24:57.603600,probando,ALejad,woeifn,elfin,ewfin,wofin,woeifn
-2025-12-21T18:16:22.656911,probando2,Alej,21/02/1997,Spain,ale,C/,Jeje
-2025-12-21T18:41:00.400331,alejandra,Ale,ew,dew,wed,,
-
+timestamp,username,full_name,birth_date,nationality,email_address,current_home_address,household_composition
+2025-12-19T18:29:56.095486,belunchi97,Belén Pilar Alamán Sola,26/02/1997,Spain,alamabelen@gmail.com,"c/ levante, 11 ",living with family
