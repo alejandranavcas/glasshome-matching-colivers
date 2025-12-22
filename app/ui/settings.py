@@ -4,7 +4,7 @@ def apply_theme():
     st.set_page_config(
       page_title="Co-Living Compatibility Matching",
       #layout="wide",  # This makes it take full width # or "centered"
-      initial_sidebar_state="expanded"
+      initial_sidebar_state="collapsed" #"collapsed" or "expanded"
   )
 
     st.markdown(
@@ -28,6 +28,10 @@ def apply_theme():
             max-width: 100%;
             padding-left: 15rem;
             padding-right: 15rem;
+        }
+
+        [data-testid="stSidebar"] {
+        display: none;
         }
 
         /* App base */
