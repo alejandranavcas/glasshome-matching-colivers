@@ -1,4 +1,4 @@
-from embeddings import get_embeddings
+from utils.embeddings import get_embeddings
 from datetime import datetime
 import pandas as pd
 import os
