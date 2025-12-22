@@ -18,11 +18,35 @@ def render():
 
     st.subheader("Architectural & Physical Space Preferences")
 
-    req["desired_location"] = st.text_input(
-        "Desired location (city, neighborhood, or region)",
-        value=req.get("desired_location", ""),
-        placeholder="e.g. Germany, Berlin, Kreuzberg"
+    location_options = [
+        "Sweden, Karlstad",
+        "Sweden, Stockholm",
+        "Sweden, Gothenburg",
+        "Sweden (all)",
+        "Denmark, Copenhagen",
+        "Denmark, Aarhus",
+        "Germany, Stuttgart",
+        "Germany, Munich",
+        "Germany, Brandenburg",
+        "Norway (all)",
+        "Norway, Oslo",
+        "Switzerland (all)",
+        "Switzerland, Zurich",
+        "Other regions"
+    ]
+    selected_location = st.selectbox(
+        "What is your desired location (Country, city or region)?",
+        options=location_options
     )
+
+    if selected_location == "Other regions":
+        req["desired_location"] = st.text_input(
+            "Please specify your desired location",
+            value=req.get("desired_location", "") if req.get("desired_location") != "Other regions" else "",
+            placeholder="e.g. Spain, Barcelona"
+        )
+    else:
+        req["desired_location"] = selected_location
 
     req["size_of_community"] = st.multiselect(
         "Preferred community size",
