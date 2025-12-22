@@ -63,7 +63,7 @@ def render():
     )
 
     req["communal_activities"] = st.multiselect(
-        "Which communal activities are important to you?",
+        "Which communal activities are important to you? (you may select multiple)",
         options=[
             "Shared meals",
             "Gardening",
@@ -80,24 +80,39 @@ def render():
 
     st.subheader("Lifestyle & Practical Needs")
 
-    req["smoking"] = st.radio(
-        "Smoking / Vaping preference",
-        options=[
-            "Yes",
-            "Only in private room",
-            "No"
-        ],
-        index=_radio_index(req.get("smoking"), ["Yes", "Only in private room", "No"])
-    )
+    req["noise_tolerance"] = _importance_slider("Noise tolerance")
 
-    req["pets"] = st.radio(
+    req["pets_preferences"] = st.multiselect(
         "Pets policy",
         options=[
-            "Yes",
-            "Only in private space",
-            "No"
+            "Have pets",
+            "Want pets",
+            "No pets allowed",
+            "Allergies"
         ],
-        index=_radio_index(req.get("pets"), ["Yes", "Only in private space", "No"])
+        default=req.get("pets_preferences", [])
+    )
+
+    req["dietary_restrictions"] = st.selectbox(
+        "What are your dietary restrictions (for shared meals)?",
+        options=["Vegan","Vegetarian","No restrictions","Other"]
+    )
+
+    req["smoking_tolerance"] = st.multiselect(
+        "Smoking/vaping tolerance (you may select multiple)",
+        options=[
+            "Nowhere",
+            "In private spaces",
+            "In outdoor spaces",
+            "In shared spaces"
+        ],
+        default=req.get("smoking_tolerance", [])
+    )
+
+    req["hobbies"] = st.text_area(
+        "What are your hobbies and interests?",
+        value=req.get("hobbies", ""),
+        placeholder="Write here..."
     )
 
     req["other_requirements"] = st.text_area(
@@ -125,10 +140,16 @@ def render():
 # Helpers
 # -------------------------------------------------
 
-def _radio_index(value, options):
-    """
-    Safely determine radio index when returning to this step.
-    """
-    if value in options:
-        return options.index(value)
-    return len(options) - 1  # default to last option ("No")
+def _importance_slider(label: str) -> int:
+    st.write(label)
+    st.markdown(
+        """
+        <div style="display:flex; justify-content:space-between;
+                    font-size:0.85em; color:gray;">
+            <span>Very low</span>
+            <span>Very high</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    return st.slider("", 1, 5, 3, key=f"{label}_slider")
