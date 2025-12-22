@@ -163,7 +163,7 @@ if __name__ == "__main__":
     )
 
 
-
+"""
 #%%
 from itertools import product
 
@@ -185,4 +185,4 @@ for combo in product(*trait_groups):
         personality_type=personality_values,
         file_name=f"cycle9_survey_agent_answers/{personality_label}.csv"
     )
-
+"""
