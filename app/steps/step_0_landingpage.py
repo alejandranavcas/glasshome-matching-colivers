@@ -1,8 +1,6 @@
 import streamlit as st
-from typing import Optional
 
 from state.navigation import next_step
-from data_access.demographics import username_exists
 from ui.layout import render_header
 
 
@@ -15,61 +13,72 @@ def render():
         """
         **Discover Yourself. Connect with Others.**
 
-        Unlock deeper insights about your personality, values, and preferences—
+        Unlock deeper insights about your personality, values, and preferences,
         and find your perfect community match.
 
-        - Understand Yourself
-        - Connect Meaningfully
-        - Build Better Communities
-
-        **Your privacy matters.** Your data is stored securely and never shared
-        without your consent.
+        Our app helps you to:
         """
     )
 
-    st.write("Choose a username to identify yourself in matches.")
+    col1, col2, col3 = st.columns(3)
 
-    # -----------------------------
-    # Input
-    # -----------------------------
+    with col1:
+        with st.container(border=True):
+            st.write("### 🧠 Understand Yourself")
+            st.markdown("""**Explore your unique traits and what drives you.**""")
+    with col2:
+        with st.container(border=True):
+            st.write("### 🤝 Connect Meaningfully")
+            st.write("""**Meet like-minded individuals who share your values.**""")
 
-    username = st.text_input(
-        "Username",
-        value=st.session_state.username,
-        max_chars=30,
-        help="Enter a display name (3+ characters)."
+    with col3:
+        with st.container(border=True):
+            st.write("### 🏡 Build Better Communities")
+            st.write("""**Create groups that truly fit, not just click.**""")
+
+    st.markdown(
+        """
+        Start your journey today and see how understanding yourself can transform the way you connect with others.
+
+        After this evaluation you will:
+        - Have a profile on our app with specific personalized answers.
+        - Be part of our database where we use the profiles to do better matches.
+        - Be suggested matching communities and/or individuals.
+        """
     )
+
+    st.write("### Structure of the Questionnaire")
+    st.markdown(
+        """
+        The questionnaire is divided into several key sections. Each section is designed to provide insights that contribute to a holistic understanding of who you are and what you seek in a living environment:
+
+        1. **Demographics**: Basic information to help us understand your background and to have your contact details.
+        2. **Requirements**: Specify your practical requirements for co-living.
+        3. **Lifestyle Preferences**: Share your habits and lifestyle preferences.
+        4. **Personality Assessment**: Dive deep into your traits and behaviors.
+        5. **Values Exploration**: Identify what matters most to you in a community setting.
+        """
+    )
+
+    st.divider()
+
+    st.markdown("""**Your privacy matters.**
+                Your data is stored securely and never shared
+                without your consent."""
+                )
+
+    # Checkbox to accept terms
+    accept = st.checkbox("I accept [AGB](https://www.glasshome.studio/terms-and-conditions) and data storage.")
 
     # -----------------------------
     # Navigation
     # -----------------------------
 
-    col1, col2 = st.columns([7, 1])
-
-    with col1:
-        if st.button("Quit"):
-            st.stop()
+    col1, col2 = st.columns([5, 1])
 
     with col2:
-        if st.button("Next →"):
-            _handle_next(username)
-
-
-# -----------------------------
-# Internal logic
-# -----------------------------
-
-def _handle_next(username: Optional[str]):
-    # normalize None -> empty string and trim whitespace
-    username = (username or "").strip()
-
-    if len(username) < 3:
-        st.error("Username must be at least 3 characters.")
-        return
-
-    if username_exists(username):
-        st.error("That username is already taken. Please choose another.")
-        return
-
-    st.session_state.username = username
-    next_step()
+        if st.button("Start Questionnaire →"):
+            if accept:
+                next_step()
+            else:
+                st.warning("Please accept AGB and data storage to continue.")
