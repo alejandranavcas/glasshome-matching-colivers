@@ -10,7 +10,7 @@ def render():
     render_header()
 
     st.header("Step 5: Tell Us About Your Values")
-    st.write(f"Signed in as: **{st.session_state.username}**")
+    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
 
     living = st.text_area(
         "Living together",

@@ -9,7 +9,7 @@ def render():
     render_header()
 
     st.header("Step 4: Personality Traits Questionnaire")
-    st.write(f"Signed in as: **{st.session_state.username}**")
+    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
     st.write(
         "Indicate how much you agree or disagree with the following statements."
     )

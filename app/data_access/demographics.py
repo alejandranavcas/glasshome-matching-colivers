@@ -44,6 +44,7 @@ def _load_df():
 def username_exists(username: str) -> bool:
     """
     Case-insensitive check whether username already exists.
+    The considered username is the email address.
     """
     if not username:
         return False
@@ -64,7 +65,7 @@ def save_demographics_from_state(session_state) -> None:
 
     row = {
         "timestamp": datetime.utcnow().isoformat(),
-        "username": session_state.username,
+        "username": session_state.emailaddress,
         "fullname": session_state.fullname,
         "birthdate": session_state.birthdate,
         "nationality": session_state.nationality,

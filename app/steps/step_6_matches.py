@@ -9,7 +9,7 @@ def render():
     render_header()
 
     st.header("Your Matches")
-    st.write(f"Showing matches for **{st.session_state.username}**")
+    st.write(f"Showing matches for **{st.session_state.emailaddress}**")
 
     matches = find_matches(st.session_state)
 

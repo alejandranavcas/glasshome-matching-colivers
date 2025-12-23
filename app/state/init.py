@@ -3,7 +3,6 @@ import streamlit as st
 def init_session_state():
     defaults = {
         "step": 0,
-        "username": "",
         "user_requirements": {},
         "user_personality": {},
         "user_values": "",

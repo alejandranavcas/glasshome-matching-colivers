@@ -8,7 +8,7 @@ def render():
     render_header()
 
     st.header("Step 3: Lifestyle Preferences")
-    st.write(f"Signed in as: **{st.session_state.username}**")
+    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
 
     req = st.session_state.user_requirements
 

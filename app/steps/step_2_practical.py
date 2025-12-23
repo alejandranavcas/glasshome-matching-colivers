@@ -7,8 +7,9 @@ from ui.layout import render_header
 def render():
     render_header()
 
+    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
     st.header("Step 2: Practical Requirements")
-    st.write(f"Signed in as: **{st.session_state.username}**")
+    st.write("These are the requirements you have for your desired community. Please indicate your choices.")
 
     req = st.session_state.user_requirements
 
@@ -35,7 +36,7 @@ def render():
         "Other regions"
     ]
     selected_location = st.selectbox(
-        "What is your desired location (Country, city or region)?",
+        "What is your desired location (country, city or region)?",
         options=location_options
     )
 
