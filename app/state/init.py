@@ -13,7 +13,7 @@ def init_session_state():
         "birthdate": "",
         "nationality": "",
         "emailaddress": "",
-        "currentaddress": "",
+        "resident_type": "",
         "householdcomposition": "",
     }
 

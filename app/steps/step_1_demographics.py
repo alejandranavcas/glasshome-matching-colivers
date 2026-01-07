@@ -14,10 +14,20 @@ def render():
     st.session_state.birthdate = st.date_input("Birth date:", value=st.session_state.birthdate if st.session_state.birthdate else None, min_value=datetime.date(1950, 1, 1), max_value=datetime.date.today())
     st.session_state.nationality = st.text_input("Nationality:", st.session_state.nationality, placeholder="e.g. Swedish")
     st.session_state.emailaddress = st.text_input("Email address:", st.session_state.emailaddress, placeholder="e.g. email@example.com")
-    st.session_state.householdcomposition = st.text_input(
-        "Household composition",
-        st.session_state.householdcomposition
-    )
+    st.session_state.resident_type = st.selectbox(
+            "Resident type:",
+            options=["Founder", "Joiner"],
+            index=["Founder", "Joiner"].index(st.session_state.resident_type) if st.session_state.resident_type in ["Founder", "Joiner"] else 0
+        )
+    st.caption("**Founder**: Starting a new housing community. **Joiner**: Joining an existing housing community.")
+
+    st.session_state.householdcomposition = st.selectbox(
+            "What is your household composition?",
+            options=["Alone", "With partner", "With family", "With friends"],
+            index=["Alone", "With partner", "With family", "With friends"].index(st.session_state.householdcomposition) if st.session_state.householdcomposition in ["Alone", "With partner", "With family", "With friends"] else 0
+        )
+    st.caption("E.g. living alone, with partner, with family, with friends, etc.")
+
 
     # -----------------------------
     # Internal logic

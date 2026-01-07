@@ -18,7 +18,7 @@ DEMOGRAPHICS_COLUMNS = [
     "birthdate",
     "nationality",
     "emailaddress",
-    "currentaddress",
+    "resident_type",
     "householdcomposition",
 ]
 
@@ -70,7 +70,7 @@ def save_demographics_from_state(session_state) -> None:
         "birthdate": session_state.birthdate,
         "nationality": session_state.nationality,
         "emailaddress": session_state.emailaddress,
-        "currentaddress": session_state.currentaddress,
+        "resident_type": session_state.resident_type,
         "householdcomposition": session_state.householdcomposition,
     }
 
