@@ -14,7 +14,7 @@ BFI_QUESTIONS = {
     13: "I am a reliable worker",
     14: "I can be tense",
     15: "I am ingenious, a deep thinker",
-    16: "I generates a lot of enthusiasm",
+    16: "I generate a lot of enthusiasm",
     17: "I have a forgiving nature",
     18: "I tend to be disorganized",
     19: "I worry a lot",

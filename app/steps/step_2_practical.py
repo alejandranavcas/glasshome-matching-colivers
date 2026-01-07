@@ -50,7 +50,7 @@ def render():
         req["desired_location"] = selected_location
 
     req["size_of_community"] = st.multiselect(
-        "Preferred community size",
+        "What community size do you prefer?",
         options=[
             "Small (<10 people)",
             "Medium (10–40)",
@@ -61,7 +61,7 @@ def render():
     )
 
     req["regime_of_sharing"] = st.multiselect(
-        "Preferred regime of sharing",
+        "What is your preferred regime of sharing?",
         options=[
             "Shared extra spaces (gardens, workshops, guest rooms, garage)",
             "Shared essential spaces (kitchen, laundry, dining rooms)",
@@ -71,7 +71,7 @@ def render():
     )
 
     req["physical_environment"] = st.multiselect(
-        "Preferred physical environment",
+        "Where would you prefer your physical environment to be?",
         options=[
             "Urban / city-centre",
             "Suburban",
@@ -85,7 +85,7 @@ def render():
     )
 
     req["private_dwelling"] = st.multiselect(
-        "Required features in your private dwelling",
+        "What features would you require in your private dwelling?",
         options=[
             "Full kitchen",
             "Kitchenette",
@@ -104,7 +104,7 @@ def render():
     st.subheader("Operational Preferences: Daily Governance & Management")
 
     req["governance_style"] = st.multiselect(
-        "Preferred governance style",
+        "What governance style would you prefer?",
         options=[
             "Self-managed (active involvement, working groups)",
             "Semi-managed (mix of professionals and residents)",
@@ -129,7 +129,7 @@ def render():
     st.subheader("Institutional Set-Up: Financial & Legal Expectations")
 
     req["legal_structure"] = st.multiselect(
-        "Preferred legal structure",
+        "What is your preferred legal structure?",
         options=[
             "Ownership (private unit + share of common areas)",
             "Cooperative ownership",
@@ -147,7 +147,7 @@ def render():
     )
 
     req["other_practical_requirements"] = st.text_area(
-        "Other practical requirements (optional)",
+        "Other practical requirements (optional):",
         value=req.get("other_practical_requirements", "")
     )
 

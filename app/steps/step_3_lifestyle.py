@@ -30,7 +30,7 @@ def render():
     )
 
     req["mix_of_household"] = st.multiselect(
-        "Importance of a diverse mix of household types",
+        "How much importance do you place on a diverse mix of household types?",
         options=[
             "Important",
             "Neutral",
@@ -40,7 +40,7 @@ def render():
     )
 
     req["degree_shared_responsibility"] = st.multiselect(
-        "Desired degree of shared responsibility",
+        "What is your desired degree of shared responsibility?",
         options=[
             "Strong commitment; active participation",
             "Moderate involvement",
@@ -51,7 +51,7 @@ def render():
     )
 
     req["frequency_shared_activities"] = st.multiselect(
-        "How often would you like shared activities?",
+        "How often would you like to share activities?",
         options=[
             "Daily",
             "Several times a week",
@@ -99,7 +99,7 @@ def render():
     )
 
     req["smoking_tolerance"] = st.multiselect(
-        "Smoking/vaping tolerance (you may select multiple)",
+        "What is your smoking/vaping tolerance? (you may select multiple)",
         options=[
             "Nowhere",
             "In private spaces",
@@ -116,7 +116,7 @@ def render():
     )
 
     req["other_requirements"] = st.text_area(
-        "Other requirements (optional)",
+        "Other requirements (optional):",
         value=req.get("other_requirements", ""),
         placeholder="Any special requests or preferences..."
     )
