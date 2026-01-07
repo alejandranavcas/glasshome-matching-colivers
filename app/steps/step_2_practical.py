@@ -49,43 +49,43 @@ def render():
     else:
         req["desired_location"] = selected_location
 
+    req["physical_environment"] = st.multiselect(
+        "Where would you prefer your physical environment to be? (you may select multiple)",
+        options=[
+            "Urban / city-centre",
+            "Suburban",
+            "Rural / nature-based"
+        ],
+        default=req.get("physical_environment", [])
+    )
+
     req["size_of_community"] = st.multiselect(
-        "What community size do you prefer?",
+        "What community size do you prefer? (you may select multiple)",
         options=[
             "Small (<10 people)",
             "Medium (10–40)",
-            "Large (40–100)",
-            "Extra-large (>100)"
+            "Large (40–100)"
         ],
         default=req.get("size_of_community", [])
     )
 
     req["regime_of_sharing"] = st.multiselect(
-        "What is your preferred regime of sharing?",
+        "What areas would you share with your neighbours? (you may select multiple)",
         options=[
-            "Shared extra spaces (gardens, workshops, guest rooms, garage)",
-            "Shared essential spaces (kitchen, laundry, dining rooms)",
+            "Gardens and outdoor spaces",
+            "Workshops and hobby rooms",
+            "Guest rooms",
+            "Garage and parking",
+            "Kitchen and dining areas",
+            "Laundry facilities",
+            "Living rooms and lounges",
             "Minimal/no shared spaces"
         ],
         default=req.get("regime_of_sharing", [])
     )
 
-    req["physical_environment"] = st.multiselect(
-        "Where would you prefer your physical environment to be?",
-        options=[
-            "Urban / city-centre",
-            "Suburban",
-            "Rural / nature-based",
-            "Eco-village style",
-            "Architect-designed",
-            "Self-built eco-community",
-            "Renovated/retrofit buildings"
-        ],
-        default=req.get("physical_environment", [])
-    )
-
     req["private_dwelling"] = st.multiselect(
-        "What features would you require in your private dwelling?",
+        "What features would you require in your private dwelling? (you may select multiple)",
         options=[
             "Full kitchen",
             "Kitchenette",
@@ -104,7 +104,7 @@ def render():
     st.subheader("Operational Preferences: Daily Governance & Management")
 
     req["governance_style"] = st.multiselect(
-        "What governance style would you prefer?",
+        "What governance style would you prefer? (you may select multiple)",
         options=[
             "Self-managed (active involvement, working groups)",
             "Semi-managed (mix of professionals and residents)",
@@ -129,7 +129,7 @@ def render():
     st.subheader("Institutional Set-Up: Financial & Legal Expectations")
 
     req["legal_structure"] = st.multiselect(
-        "What is your preferred legal structure?",
+        "What is your preferred legal structure? (you may select multiple)",
         options=[
             "Ownership (private unit + share of common areas)",
             "Cooperative ownership",
@@ -140,11 +140,28 @@ def render():
         default=req.get("legal_structure", [])
     )
 
-    req["monthly_budget"] = st.text_area(
-        "Maximum monthly housing budget",
-        value=req.get("monthly_budget", ""),
-        placeholder="e.g. €800–€1,200"
-    )
+    st.write("Monthly housing budget for the entire household:")
+    col1_budget, col2_budget, col3_budget = st.columns(3)
+    with col1_budget:
+        req["budget_currency"] = st.selectbox(
+            "Currency:",
+            options=["EUR (€)", "DKK (kr)", "SEK (kr)"],
+            index=["EUR (€)", "DKK (kr)", "SEK (kr)"].index(req.get("budget_currency", "EUR (€)")) if req.get("budget_currency") in ["EUR (€)", "DKK (kr)", "SEK (kr)"] else 0
+        )
+    with col2_budget:
+        req["monthly_budget_min"] = st.number_input(
+            "Minimum monthly budget:",
+            value=req.get("monthly_budget_min", 0),
+            min_value=0,
+            step=50
+        )
+    with col3_budget:
+        req["monthly_budget_max"] = st.number_input(
+            "Maximum monthly budget:",
+            value=req.get("monthly_budget_max", 0),
+            min_value=0,
+            step=50
+        )
 
     req["other_practical_requirements"] = st.text_area(
         "Other practical requirements (optional):",
