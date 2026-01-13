@@ -3,10 +3,9 @@
 ## What is it
 
 Matchmaking app to find your best fit for your neighbours, flatmates in a community living set up.
-**Discover Yourself. Connect with Others.**
 
-        Unlock deeper insights about your personality, values, and preferences,
-        and find your perfect community match.
+**Discover Yourself. Connect with Others.**
+Unlock deeper insights about your personality, values, and preferences, and find your perfect community match.
 
 ## How to use repository
 
