@@ -9,7 +9,7 @@ Unlock deeper insights about your personality, values, and preferences, and find
 
 ## How to use repository
 
-1. **Clone the repository**:
+1. **Go to the desired folder you want to save the repository**
 
 2. **Clone the repository**:
 
@@ -40,7 +40,20 @@ Unlock deeper insights about your personality, values, and preferences, and find
 
 ## Run the streamlit app
 
-```bash
-cd app
-streamlit run app.py
-```
+1. **Activate the virtual environment** (if not already active):
+
+   ```bash
+   # Windows
+   .venv\Scripts\activate
+
+   # macOS/Linux
+   source .venv/bin/activate
+   ```
+
+2. **Navigate to the app folder and run Streamlit**:
+   ```bash
+   cd app
+   streamlit run app.py
+   ```
+
+The app will open automatically in your default browser at `http://localhost:8501`. If it doesn't, manually navigate to that URL.
