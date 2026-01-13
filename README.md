@@ -34,7 +34,18 @@ Unlock deeper insights about your personality, values, and preferences, and find
    ```
 
 4. **Install dependencies**:
+
+   If you only want to run the working app:
+
    ```bash
+   # Install only app dependencies
+   pip install -r app/requirements.txt
+   ```
+
+   Or, if you want to use also the experiments folder then:
+
+   ```bash
+   # Install all repository dependencies
    pip install -r requirements.txt
    ```
 
