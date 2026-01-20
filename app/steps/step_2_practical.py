@@ -5,8 +5,6 @@ from ui.layout import render_header
 
 
 def render():
-    render_header()
-
     st.write(f"Signed in as: **{st.session_state.emailaddress}**")
     st.header("Step 2: Practical Requirements")
     st.write("These are the requirements you have for your desired community. Please indicate your choices.")
@@ -17,7 +15,7 @@ def render():
     # Architectural & Physical Space Preferences
     # -------------------------------------------------
 
-    st.subheader("Architectural & Physical Space Preferences")
+    st.subheader("Architectural & Physical Space")
 
     location_options = [
         "Sweden, Karlstad",
@@ -85,7 +83,7 @@ def render():
     )
 
     req["private_dwelling"] = st.multiselect(
-        "What features would you require in your private dwelling? (you may select multiple)",
+        "What features would you require in your private home? (you may select multiple)",
         options=[
             "Full kitchen",
             "Kitchenette",
@@ -98,20 +96,30 @@ def render():
     )
 
     # -------------------------------------------------
-    # Operational Preferences
+    # Daily Governance & Management
     # -------------------------------------------------
 
-    st.subheader("Operational Preferences: Daily Governance & Management")
+    st.subheader("Daily Governance & Management")
 
-    req["governance_style"] = st.multiselect(
-        "What governance style would you prefer? (you may select multiple)",
+    # Removed in Cycle 13 (20 January 2026)
+    # req["governance_style"] = st.multiselect(
+    #    "What governance style would you prefer? (you may select multiple)",
+    #   options=[
+    #        "Self-managed (active involvement, working groups)",
+    #       "Semi-managed (mix of professionals and residents)",
+    #        "Professionally managed",
+    #        "No preference"
+    #    ],
+    #    default=req.get("governance_style", [])
+    #)
+
+    req["daily_management"] = st.multiselect(
+        "Public areas shared among neighbors require work (eg. cleaning, gardening, maintenance). Would you prefer contributing to that work or paying a fee for that work to be done?",
         options=[
-            "Self-managed (active involvement, working groups)",
-            "Semi-managed (mix of professionals and residents)",
-            "Professionally managed",
-            "No preference"
+            "Contribute to the work",
+            "Pay a fee for the work to be done"
         ],
-        default=req.get("governance_style", [])
+        default=req.get("daily_management", [])
     )
 
     st.markdown("**How important are the following?**")
@@ -126,22 +134,25 @@ def render():
     # Financial & Legal Expectations
     # -------------------------------------------------
 
-    st.subheader("Institutional Set-Up: Financial & Legal Expectations")
+    st.subheader("Financial & Legal Expectations")
 
-    req["legal_structure"] = st.multiselect(
-        "What is your preferred legal structure? (you may select multiple)",
+    req["legal_structure"] = st.selectbox(
+        "What type of ownership do you prefer?",
         options=[
-            "Ownership (private unit + share of common areas)",
-            "Cooperative ownership",
-            "Long-term rental",
-            "Rental with option to buy",
-            "Other"
+            "Rental agreement",
+            "Purchase (long-term ownership)"
         ],
-        default=req.get("legal_structure", [])
+        index=0 if not req.get("legal_structure") else [
+            "Rental agreement",
+            "Purchase (long-term ownership)"
+        ].index(req["legal_structure"]) if req["legal_structure"] in [
+            "Rental agreement",
+            "Purchase (long-term ownership)"
+        ] else 0
     )
 
-    st.write("Monthly housing budget for the entire household:")
-    col1_budget, col2_budget, col3_budget = st.columns(3)
+    st.write("Housing budget for the entire household:")
+    col1_budget, col2_budget = st.columns(2)
     with col1_budget:
         req["budget_currency"] = st.selectbox(
             "Currency:",
@@ -149,19 +160,20 @@ def render():
             index=["EUR (€)", "DKK (kr)", "SEK (kr)"].index(req.get("budget_currency", "EUR (€)")) if req.get("budget_currency") in ["EUR (€)", "DKK (kr)", "SEK (kr)"] else 0
         )
     with col2_budget:
-        req["monthly_budget_min"] = st.number_input(
-            "Minimum monthly budget:",
-            value=req.get("monthly_budget_min", 0),
-            min_value=0,
-            step=50
-        )
-    with col3_budget:
-        req["monthly_budget_max"] = st.number_input(
-            "Maximum monthly budget:",
-            value=req.get("monthly_budget_max", 0),
-            min_value=0,
-            step=50
-        )
+        if req["legal_structure"] == "Rental agreement":
+            req["monthly_budget_rent"] = st.number_input(
+                "What can you spend on the rent per month?",
+                value=req.get("monthly_budget_rent", 0),
+                min_value=0,
+                step=50
+            )
+        if req["legal_structure"] == "Purchase (long-term ownership)":
+            req["available_budget_purchase"] = st.number_input(
+                "What is your available budget for purchase of your home?",
+                value=req.get("available_budget_purchase", 0),
+                min_value=0,
+                step=1000
+            )
 
     req["other_practical_requirements"] = st.text_area(
         "Other practical requirements (optional):",
