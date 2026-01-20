@@ -16,13 +16,12 @@ def render():
     st.session_state.emailaddress = st.text_input("Email address:", st.session_state.emailaddress, placeholder="e.g. email@example.com")
     st.session_state.resident_type = st.selectbox(
             "Resident type:",
-            options=["Founder", "Joiner"],
-            index=["Founder", "Joiner"].index(st.session_state.resident_type) if st.session_state.resident_type in ["Founder", "Joiner"] else 0
+            options=["Founder: I want to start a community", "Joiner: I want to join an existing community"],
+            index=["Founder: I want to start a community", "Joiner: I want to join an existing community"].index(st.session_state.resident_type) if st.session_state.resident_type in ["Founder: I want to start a community", "Joiner: I want to join an existing community"] else 0
         )
-    st.caption("**Founder**: Starting a new housing community. **Joiner**: Joining an existing housing community.")
 
     st.session_state.householdcomposition = st.selectbox(
-            "What is your household composition?",
+            "With whom will you be living?",
             options=["Alone", "With partner", "With family", "With friends"],
             index=["Alone", "With partner", "With family", "With friends"].index(st.session_state.householdcomposition) if st.session_state.householdcomposition in ["Alone", "With partner", "With family", "With friends"] else 0
         )
