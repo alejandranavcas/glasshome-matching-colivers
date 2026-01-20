@@ -5,10 +5,8 @@ from ui.layout import render_header
 
 
 def render():
-    render_header()
-
-    st.header("Step 3: Lifestyle Preferences")
     st.write(f"Signed in as: **{st.session_state.emailaddress}**")
+    st.header("Step 3: Lifestyle Preferences")
 
     req = st.session_state.user_requirements
 
@@ -16,51 +14,79 @@ def render():
     # Relational & Social Interaction Preferences
     # -------------------------------------------------
 
-    st.subheader("Relational & Social Interaction Preferences")
+    st.subheader("Relational & Social Interaction")
 
-    req["contact_with_neighbours"] = st.multiselect(
-        "How much social contact do you prefer with neighbours?",
-        options=[
-            "Very high",
-            "Moderate",
-            "Low",
-            "Only when necessary"
-        ],
-        default=req.get("contact_with_neighbours", [])
+    # Contact with neighbours slider
+    st.write("How much social contact do you prefer with neighbours?")
+    contact_options = ["Only when necessary", "Low", "Moderate", "Very high"]
+    st.markdown(
+        """
+        <div style="display:flex; justify-content:space-between;
+                    font-size:0.85em; color:gray;">
+            <span>Only when necessary</span>
+            <span>Low</span>
+            <span>Moderate</span>
+            <span>Very high</span>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
+    contact_value = st.slider("", 1, 4, 2, key="contact_slider")
+    req["contact_with_neighbours"] = contact_options[contact_value - 1]
 
-    req["mix_of_household"] = st.multiselect(
-        "How much importance do you place on a diverse mix of household types?",
-        options=[
-            "Important",
-            "Neutral",
-            "Not important"
-        ],
-        default=req.get("mix_of_household", [])
+    # Mix of household slider
+    st.write("How much importance do you place on a diverse mix of household types?")
+    mix_options = ["Not important", "Neutral", "Important"]
+    st.markdown(
+        """
+        <div style="display:flex; justify-content:space-between;
+                    font-size:0.85em; color:gray;">
+            <span>Not important</span>
+            <span>Neutral</span>
+            <span>Important</span>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
+    mix_value = st.slider("", 1, 3, 2, key="mix_slider")
+    req["mix_of_household"] = mix_options[mix_value - 1]
 
-    req["degree_shared_responsibility"] = st.multiselect(
-        "What is your desired degree of shared responsibility?",
-        options=[
-            "Strong commitment; active participation",
-            "Moderate involvement",
-            "Occasional participation",
-            "Minimal involvement"
-        ],
-        default=req.get("degree_shared_responsibility", [])
+    # Degree shared responsibility slider
+    st.write("What is your desired degree of shared responsibility?")
+    degree_options = ["Minimal involvement", "Occasional participation", "Moderate involvement", "Strong commitment; active participation"]
+    st.markdown(
+        """
+        <div style="display:flex; justify-content:space-between;
+                    font-size:0.85em; color:gray;">
+            <span>Minimal involvement</span>
+            <span>Occasional participation</span>
+            <span>Moderate involvement</span>
+            <span>Strong commitment; active participation</span>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
+    degree_value = st.slider("", 1, 4, 2, key="degree_slider")
+    req["degree_shared_responsibility"] = degree_options[degree_value - 1]
 
-    req["frequency_shared_activities"] = st.multiselect(
-        "How often would you like to share activities?",
-        options=[
-            "Daily",
-            "Several times a week",
-            "Once a week",
-            "Occasionally",
-            "Rarely"
-        ],
-        default=req.get("frequency_shared_activities", [])
+    # Frequency shared activities slider
+    st.write("How often would you like to share activities?")
+    freq_options = ["Rarely", "Occasionally", "Once a week", "Several times a week", "Daily"]
+    st.markdown(
+        """
+        <div style="display:flex; justify-content:space-between;
+                    font-size:0.85em; color:gray;">
+            <span>Rarely</span>
+            <span>Occasionally</span>
+            <span>Once a week</span>
+            <span>Several times a week</span>
+            <span>Daily</span>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
+    freq_value = st.slider("", 1, 5, 3, key="freq_slider")
+    req["frequency_shared_activities"] = freq_options[freq_value - 1]
 
     req["communal_activities"] = st.multiselect(
         "Which communal activities are important to you? (you may select multiple)",
@@ -69,10 +95,16 @@ def render():
             "Gardening",
             "Childcare",
             "Cultural / Social events",
-            "Maintenance work"
+            "Maintenance work",
+            "Other"
         ],
-        default=req.get("communal_activities", [])
     )
+    if "Other" in req["communal_activities"]:
+        req["communal_activities"] = st.text_input(
+            "Please specify your communal activities:",
+            value=req.get("communal_activities", "") if "Other" not in req.get("communal_activities") else "",
+            placeholder=" "
+        )
 
     # -------------------------------------------------
     # Lifestyle & Practical Needs
@@ -80,23 +112,40 @@ def render():
 
     st.subheader("Lifestyle & Practical Needs")
 
-    req["noise_tolerance"] = _importance_slider("Noise tolerance")
+    st.write("Reflect on your preferences for pets.")
 
-    req["pets_preferences"] = st.multiselect(
-        "Pets policy",
-        options=[
-            "Have pets",
-            "Want pets",
-            "No pets allowed",
-            "Allergies"
-        ],
-        default=req.get("pets_preferences", [])
+    req["desired_animals"] = st.multiselect(
+        "What animals would you want to own now or in the future? (you may select multiple)",
+        options=["dog", "cat", "rabbit", "hamster", "bird", "fish", "horse", "donkey", "cow", "other"],
     )
+    if "other" in req["desired_animals"]:
+        req["desired_animals"] = st.text_input(
+            "Please specify your desired animals:",
+            value=req.get("desired_animals", "") if "other" not in req.get("desired_animals") else "",
+            placeholder=" "
+        )
+
+    req["forbidden_animals"] = st.multiselect(
+        "What animals would you NOT want to have in your living environment? (you may select multiple)",
+        options=["dog", "cat", "rabbit", "hamster", "bird", "fish", "horse", "donkey", "cow", "other"],
+    )
+    if "other" in req["forbidden_animals"]:
+        req["forbidden_animals"] = st.text_input(
+            "Please specify your forbidden animals:",
+            value=req.get("forbidden_animals", "") if "other" not in req.get("forbidden_animals") else "",
+            placeholder=" "
+        )
 
     req["dietary_restrictions"] = st.selectbox(
-        "What are your dietary restrictions (for shared meals)?",
+        "What are your dietary restrictions, for shared meals?",
         options=["Vegan","Vegetarian","No restrictions","Other"]
     )
+    if "Other" in req["dietary_restrictions"]:
+        req["dietary_restrictions"] = st.text_input(
+            "Please specify your dietary restrictions:",
+            value=req.get("dietary_restrictions", "") if "Other" != req.get("dietary_restrictions") else "",
+            placeholder=" "
+        )
 
     req["smoking_tolerance"] = st.multiselect(
         "What is your smoking/vaping tolerance? (you may select multiple)",
@@ -134,22 +183,3 @@ def render():
     with col2:
         if st.button("Next →"):
             next_step()
-
-
-# -------------------------------------------------
-# Helpers
-# -------------------------------------------------
-
-def _importance_slider(label: str) -> int:
-    st.write(label)
-    st.markdown(
-        """
-        <div style="display:flex; justify-content:space-between;
-                    font-size:0.85em; color:gray;">
-            <span>Very low</span>
-            <span>Very high</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    return st.slider("", 1, 5, 3, key=f"{label}_slider")
