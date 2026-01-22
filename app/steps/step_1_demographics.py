@@ -17,13 +17,13 @@ def render():
     st.session_state.resident_type = st.selectbox(
             "Resident type:",
             options=["Founder: I want to start a community", "Joiner: I want to join an existing community"],
-            index=["Founder: I want to start a community", "Joiner: I want to join an existing community"].index(st.session_state.resident_type) if st.session_state.resident_type in ["Founder: I want to start a community", "Joiner: I want to join an existing community"] else 0
-        )
+            index=None
+            )
 
     st.session_state.householdcomposition = st.selectbox(
             "With whom will you be living?",
             options=["Alone", "With partner", "With family", "With friends"],
-            index=["Alone", "With partner", "With family", "With friends"].index(st.session_state.householdcomposition) if st.session_state.householdcomposition in ["Alone", "With partner", "With family", "With friends"] else 0
+            index=None
         )
     st.caption("E.g. living alone, with partner, with family, with friends, etc.")
 
