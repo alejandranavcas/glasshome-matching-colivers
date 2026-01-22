@@ -7,7 +7,7 @@ from datetime import datetime
 # -----------------------------
 
 DATA_DIR = os.path.join("..", "data")
-DEMOGRAPHICS_FILE = "mock_profiles_demographics.csv"
+DEMOGRAPHICS_FILE = "saved_answers_demographics.csv"
 
 DEMOGRAPHICS_PATH = os.path.join(DATA_DIR, DEMOGRAPHICS_FILE)
 
