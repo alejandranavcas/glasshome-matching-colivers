@@ -1,8 +1,8 @@
 import streamlit as st
 
 from state.navigation import next_step, prev_step
-from ui.layout import render_header
 from utils.bfi import BFI_QUESTIONS, compute_personality
+from data_access.personality import save_personality_from_state
 
 
 def render():
@@ -83,4 +83,5 @@ def render():
     with col2:
         if st.button("Next →"):
             st.session_state.user_personality = compute_personality(responses)
+            save_personality_from_state(st.session_state)
             next_step()

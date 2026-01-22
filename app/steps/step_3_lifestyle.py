@@ -1,7 +1,9 @@
 import streamlit as st
+import csv
+import os
+import datetime
 
 from state.navigation import next_step, prev_step
-from ui.layout import render_header
 
 
 def render():
@@ -182,4 +184,18 @@ def render():
 
     with col2:
         if st.button("Next →"):
+            # Save answers to CSV
+            csv_file_path = os.path.join("..", "data", "saved_answers_lifestyle.csv")
+            row = {
+                "timestamp": datetime.datetime.utcnow().isoformat(),
+                "username": st.session_state.emailaddress,
+                **req
+            }
+            fieldnames = list(row.keys())
+            file_exists = os.path.isfile(csv_file_path)
+            with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                if not file_exists:
+                    writer.writeheader()
+                writer.writerow(row)
             next_step()

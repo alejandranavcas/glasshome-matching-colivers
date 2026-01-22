@@ -1,7 +1,8 @@
 import streamlit as st
+import csv
+import os
 
 from state.navigation import next_step, prev_step
-from ui.layout import render_header
 
 
 def render():
@@ -142,13 +143,7 @@ def render():
             "Rental agreement",
             "Purchase (long-term ownership)"
         ],
-        index=0 if not req.get("legal_structure") else [
-            "Rental agreement",
-            "Purchase (long-term ownership)"
-        ].index(req["legal_structure"]) if req["legal_structure"] in [
-            "Rental agreement",
-            "Purchase (long-term ownership)"
-        ] else 0
+        index=None
     )
 
     st.write("Housing budget for the entire household:")
@@ -167,6 +162,7 @@ def render():
                 min_value=0,
                 step=50
             )
+            req["available_budget_purchase"] = 0
         if req["legal_structure"] == "Purchase (long-term ownership)":
             req["available_budget_purchase"] = st.number_input(
                 "What is your available budget for purchase of your home?",
@@ -174,6 +170,7 @@ def render():
                 min_value=0,
                 step=1000
             )
+            req["monthly_budget_rent"] = 0
 
     req["other_practical_requirements"] = st.text_area(
         "Other practical requirements (optional):",
@@ -193,6 +190,14 @@ def render():
     with col2:
         if st.button("Next →"):
             if _validate(req):
+                # Save answers to CSV
+                csv_file_path = os.path.join("..", "data", "saved_answers_practical.csv")
+                file_exists = os.path.isfile(csv_file_path)
+                with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
+                    writer = csv.DictWriter(file, fieldnames=req.keys())
+                    if not file_exists:
+                        writer.writeheader()
+                    writer.writerow(req)
                 next_step()
 
 
