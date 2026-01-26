@@ -138,7 +138,7 @@ def render():
             placeholder=" "
         )
 
-    req["dietary_restrictions"] = st.selectbox(
+    req["dietary_restrictions"] = st.multiselect(
         "What are your dietary restrictions, for shared meals?",
         options=["Vegan","Vegetarian","No restrictions","Other"]
     )

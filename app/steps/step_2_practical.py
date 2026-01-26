@@ -19,6 +19,7 @@ def render():
     st.subheader("Architectural & Physical Space")
 
     location_options = [
+        "--Select a location--",
         "Sweden, Karlstad",
         "Sweden, Stockholm",
         "Sweden, Gothenburg",
@@ -36,7 +37,8 @@ def render():
     ]
     selected_location = st.selectbox(
         "What is your desired location (country, city or region)?",
-        options=location_options
+        options=location_options,
+        index=0
     )
 
     if selected_location == "Other regions":
