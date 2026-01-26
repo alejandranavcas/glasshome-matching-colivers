@@ -5,7 +5,7 @@ from openai import OpenAI
 from streamlit_sortables import sort_items
 
 from state.navigation import next_step, prev_step
-from data_access.profiles import save_profile_with_embeddings
+from data_access.profiles import save_texts_with_embeddings
 # from utils.validation import min_length
 
 def render():
@@ -96,9 +96,9 @@ def render():
     with col2:
         if st.button("Find Matches →"):
             profile = {
-                "username": st.session_state.username,
-                **st.session_state.user_requirements,
-                **st.session_state.user_personality,
+                "username": st.session_state.emailaddress,
+                #**st.session_state.user_requirements,
+                #**st.session_state.user_personality,
                 "share_personal_feelings": share_personal_feelings,
                 "group_disputes": group_disputes,
                 "group_decision": group_decision,
@@ -110,7 +110,7 @@ def render():
                 "working_style": working_style
             }
 
-            save_profile_with_embeddings(profile)
+            save_texts_with_embeddings(profile)
             next_step()
 
 
@@ -142,6 +142,6 @@ def audio_transcription_input(question_label, session_key):
         except OSError:
             pass
     if st.session_state.get(session_key):
-        st.subheader("📝 Transcription")
+        st.write("Transcription: ")
         st.write(st.session_state[session_key])
     return st.session_state.get(session_key, "")
