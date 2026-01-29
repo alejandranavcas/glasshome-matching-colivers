@@ -8,8 +8,10 @@ from state.navigation import next_step, prev_step
 from data_access.profiles import save_texts_with_embeddings
 # from utils.validation import min_length
 
+from ui.layout import render_login_info, render_progress_bar
+
 def render():
-    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
+    render_login_info()
     st.header("Step 5: Tell Us About Your Values")
 
     share_personal_feelings = audio_transcription_input(
@@ -97,8 +99,6 @@ def render():
         if st.button("Find Matches →"):
             profile = {
                 "username": st.session_state.emailaddress,
-                #**st.session_state.user_requirements,
-                #**st.session_state.user_personality,
                 "share_personal_feelings": share_personal_feelings,
                 "group_disputes": group_disputes,
                 "group_decision": group_decision,
@@ -113,17 +113,31 @@ def render():
             save_texts_with_embeddings(profile)
             next_step()
 
+    render_progress_bar()
+
 
 # -----------------------------
 # Helper functions
 # -----------------------------
-MY_API_KEY = ""
-client = OpenAI(api_key=MY_API_KEY)
+
+def get_openai_client():
+    if os.getenv("DEMO_MODE_SARAH", "false").lower() == "true":
+        raise RuntimeError("OpenAI disabled in DEMO_MODE_SARAH")
+
+    if os.getenv("DEMO_MODE_TOM", "false").lower() == "true":
+        raise RuntimeError("OpenAI disabled in DEMO_MODE_TOM")
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY not set")
+    return OpenAI(api_key=api_key)
+
 
 def audio_transcription_input(question_label, session_key):
     st.write(question_label)
     audio_value = st.audio_input("Record your answer:", key=f"audio_{session_key}")
     if audio_value:
+        client = get_openai_client()
         audio_bytes = audio_value.getvalue()
         st.audio(audio_bytes, format="audio/wav")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
@@ -142,6 +156,6 @@ def audio_transcription_input(question_label, session_key):
         except OSError:
             pass
     if st.session_state.get(session_key):
-        st.write("Transcription: ")
-        st.write(st.session_state[session_key])
+        st.markdown('<span style="color:blue">Transcription: </span>', unsafe_allow_html=True)
+        st.markdown(f'<span style="color:blue">{st.session_state[session_key]}</span>', unsafe_allow_html=True)
     return st.session_state.get(session_key, "")

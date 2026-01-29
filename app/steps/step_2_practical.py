@@ -3,10 +3,12 @@ import csv
 import os
 
 from state.navigation import next_step, prev_step
+from ui.layout import render_login_info, render_progress_bar
 
 
 def render():
-    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
+    render_login_info()
+
     st.header("Step 2: Practical Requirements")
     st.write("These are the requirements you have for your desired community. Please indicate your choices.")
 
@@ -201,6 +203,8 @@ def render():
                         writer.writeheader()
                     writer.writerow(req)
                 next_step()
+
+    render_progress_bar()
 
 
 # -------------------------------------------------
