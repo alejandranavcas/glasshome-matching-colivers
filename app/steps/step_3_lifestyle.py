@@ -4,10 +4,11 @@ import os
 import datetime
 
 from state.navigation import next_step, prev_step
+from ui.layout import render_login_info, render_progress_bar
 
 
 def render():
-    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
+    render_login_info()
     st.header("Step 3: Lifestyle Preferences")
 
     req = st.session_state.user_requirements
@@ -199,3 +200,5 @@ def render():
                     writer.writeheader()
                 writer.writerow(row)
             next_step()
+
+    render_progress_bar()

@@ -4,9 +4,11 @@ from state.navigation import next_step, prev_step
 from utils.bfi import BFI_QUESTIONS, compute_personality
 from data_access.personality import save_personality_from_state
 
+from ui.layout import render_login_info, render_progress_bar
+
 
 def render():
-    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
+    render_login_info()
     st.header("Step 4: Personality Traits Questionnaire")
     st.markdown(
         """
@@ -85,3 +87,5 @@ def render():
             st.session_state.user_personality = compute_personality(responses)
             save_personality_from_state(st.session_state)
             next_step()
+
+    render_progress_bar()

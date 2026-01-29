@@ -8,8 +8,10 @@ from state.navigation import next_step, prev_step
 from data_access.profiles import save_texts_with_embeddings
 # from utils.validation import min_length
 
+from ui.layout import render_login_info, render_progress_bar
+
 def render():
-    st.write(f"Signed in as: **{st.session_state.emailaddress}**")
+    render_login_info()
     st.header("Step 5: Tell Us About Your Values")
 
     share_personal_feelings = audio_transcription_input(
@@ -110,6 +112,8 @@ def render():
 
             save_texts_with_embeddings(profile)
             next_step()
+
+    render_progress_bar()
 
 
 # -----------------------------

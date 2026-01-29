@@ -7,6 +7,8 @@ def init_session_state():
 
     defaults = {
         "step": 0,
+        "DEMO_MODE_SARAH": demo_mode_sarah,
+        "DEMO_MODE_TOM": demo_mode_tom,
         "user_requirements": {},
         "user_personality": {},
 

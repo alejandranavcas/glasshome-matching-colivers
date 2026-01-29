@@ -5,6 +5,7 @@ import datetime
 
 from state.navigation import next_step, prev_step
 from data_access.demographics import save_demographics_from_state, username_exists
+from ui.layout import render_progress_bar
 
 def render():
     st.header("Step 1: Demographic Information")
@@ -71,3 +72,5 @@ def render():
     with col2:
         if st.button("Next →"):
             _handle_next(st.session_state.emailaddress)
+
+    render_progress_bar()
