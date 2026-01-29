@@ -19,6 +19,19 @@ def render():
             go_to(0)
         return
 
+    st.subheader("Your profile data")
+    st.write(st.session_state.user_requirements)
+    st.write(st.session_state.user_personality)
+    st.write(st.session_state.share_personal_feelings)
+    st.write(st.session_state.group_disputes)
+    st.write(st.session_state.group_decision)
+    st.write(st.session_state.mistake_reaction)
+    st.write(st.session_state.giving_importance)
+    st.write(st.session_state.healthy_environments)
+    st.write(st.session_state.you_creative)
+    st.write(st.session_state.sharing_unfinished_ideas)
+    st.write(st.session_state.working_style)
+
     st.subheader("Top 3 Compatibility Matches")
     st.dataframe(matches)
 
