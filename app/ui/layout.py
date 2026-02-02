@@ -10,9 +10,9 @@ def render_login_info():
         st.write(f"Signed in as: **{st.session_state.emailaddress}**")
     with col2:
         if st.session_state.get("DEMO_MODE_SARAH"):
-            st.image("images/header-glasshome.png", width=40)
+            st.image("images/profile-sarah.jpeg", width=100)
         elif st.session_state.get("DEMO_MODE_TOM"):
-            st.image("images/header-glasshome.png", width=40)
+            st.image("images/profile-tom.jpeg", width=100)
         else:
             st.image("https://www.gravatar.com/avatar/" + __import__('hashlib').md5(st.session_state.emailaddress.lower().encode()).hexdigest() + "?d=initials&s=40", width=40)
 
