@@ -11,14 +11,6 @@ def render():
     st.header("Your Matches")
     st.write(f"Showing matches for **{st.session_state.emailaddress}**")
 
-    matches = find_matches(st.session_state)
-
-    if matches.empty:
-        st.warning("No matches found.")
-        if st.button("Start Over"):
-            go_to(0)
-        return
-
     st.subheader("Your profile data")
     st.write(st.session_state.user_requirements)
     st.write(st.session_state.user_personality)
@@ -31,6 +23,14 @@ def render():
     st.write(st.session_state.you_creative)
     st.write(st.session_state.sharing_unfinished_ideas)
     st.write(st.session_state.working_style)
+
+    matches = find_matches(st.session_state)
+
+    if matches.empty:
+        st.warning("No matches found.")
+        if st.button("Start Over"):
+            go_to(0)
+        return
 
     st.subheader("Top 3 Compatibility Matches")
     st.dataframe(matches)
