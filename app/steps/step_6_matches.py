@@ -11,6 +11,28 @@ def render():
     st.header("Your Matches")
     st.write(f"Showing matches for **{st.session_state.emailaddress}**")
 
+    demo_mode = st.session_state.get("demo_mode", "prod")
+    if demo_mode == "sarah":
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col2:
+            st.image(
+                "images/demo-cluster-sarah.png",
+                use_container_width=True,
+                caption="Sarah — Top compatibility cluster",
+            )
+        st.write("It describes a woman in her early 30s, working as a graphic designer in Stockholm. She values creativity, community engagement, and sustainable living.")
+
+    elif demo_mode == "tom":
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col2:
+            st.image(
+                "images/demo-cluster-tom.png",
+                use_container_width=True,
+                caption="Tom — Top compatibility cluster",
+            )
+        st.write("It describes a man in his early 30s, working as a software developer in Berlin. He values privacy, efficiency, and a quiet living environment.")
+
+
     st.subheader("Your profile data")
     st.write(st.session_state.user_requirements)
     st.write(st.session_state.user_personality)
@@ -23,6 +45,12 @@ def render():
     st.write(st.session_state.you_creative)
     st.write(st.session_state.sharing_unfinished_ideas)
     st.write(st.session_state.working_style)
+
+    # If demo mode, skip matching
+    if demo_mode in ("sarah", "tom"):
+        if st.button("Start Over"):
+            go_to(0)
+        return
 
     matches = find_matches(st.session_state)
 

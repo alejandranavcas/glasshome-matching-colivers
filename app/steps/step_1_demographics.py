@@ -51,9 +51,9 @@ def render():
             st.error("Please enter a valid email address.")
             return
 
-        if username_exists(emailaddress):
-            st.error("That email address already exists. Please input a different one.")
-            return
+        #if username_exists(emailaddress):
+            #st.error("That email address already exists. Please input a different one.")
+            #return
 
         st.session_state.emailaddress = emailaddress
 
