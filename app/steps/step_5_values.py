@@ -121,15 +121,15 @@ def render():
 # -----------------------------
 
 def get_openai_client():
-    if os.getenv("DEMO_MODE_SARAH", "false").lower() == "true":
-        raise RuntimeError("OpenAI disabled in DEMO_MODE_SARAH")
+    demo_mode = st.session_state.get("demo_mode", "prod")
 
-    if os.getenv("DEMO_MODE_TOM", "false").lower() == "true":
-        raise RuntimeError("OpenAI disabled in DEMO_MODE_TOM")
+    if demo_mode in ("sarah", "tom"):
+        raise RuntimeError(f"OpenAI disabled in demo mode: {demo_mode}")
 
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY not set")
+
     return OpenAI(api_key=api_key)
 
 

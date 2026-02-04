@@ -1,14 +1,19 @@
 import streamlit as st
 import os
 
+def get_demo_mode():
+    # 1. URL param
+    demo = st.query_params.get("demo")
+    if demo:
+        return demo.lower()
+    return "prod"
+
 def init_session_state():
-    demo_mode_sarah = os.getenv("DEMO_MODE_SARAH", "false").lower() == "true" # Set DEMO_MODE=true in your environment for demo
-    demo_mode_tom = os.getenv("DEMO_MODE_TOM", "false").lower() == "true" # Set DEMO_MODE=true in your environment for demo
+    demo_mode = get_demo_mode()
 
     defaults = {
         "step": 0,
-        "DEMO_MODE_SARAH": demo_mode_sarah,
-        "DEMO_MODE_TOM": demo_mode_tom,
+        "demo_mode": demo_mode,
         "user_requirements": {},
         "user_personality": {},
 
@@ -32,7 +37,7 @@ def init_session_state():
         "working_style": None,
     }
 
-    if demo_mode_sarah:
+    if demo_mode == "sarah":
         defaults.update({
             "fullname": "Sarah Hubert",
             "birthdate": "1990-01-01",
@@ -116,7 +121,7 @@ def init_session_state():
             ),
         })
 
-    if demo_mode_tom:
+    elif demo_mode == "tom":
         defaults.update({
             "fullname": "Tom Müller",
             "birthdate": "1990-01-01",

@@ -5,14 +5,19 @@ def render_header():
     st.markdown("<h1 style='text-align:center'>Co-Living Compatibility Matching</h1>", unsafe_allow_html=True)
 
 def render_login_info():
+    demo_mode = st.session_state.get("demo_mode", "prod")
+
     col1, col2 = st.columns([10, 1])
     with col1:
         st.write(f"Signed in as: **{st.session_state.emailaddress}**")
+
     with col2:
-        if st.session_state.get("DEMO_MODE_SARAH"):
+        if demo_mode == "sarah":
             st.image("images/profile-sarah.jpeg", width=100)
-        elif st.session_state.get("DEMO_MODE_TOM"):
+
+        elif demo_mode == "tom":
             st.image("images/profile-tom.jpeg", width=100)
+
         else:
             st.image("https://www.gravatar.com/avatar/" + __import__('hashlib').md5(st.session_state.emailaddress.lower().encode()).hexdigest() + "?d=initials&s=40", width=40)
 
@@ -28,4 +33,4 @@ def render_progress_bar():
 
 def render_footer():
     st.markdown("---")
-    st.markdown("© 2024 Glasshome Collective. All rights reserved.")
+    st.markdown("© 2024 Glasshome. All rights reserved.")
