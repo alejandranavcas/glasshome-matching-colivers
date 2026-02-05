@@ -110,7 +110,7 @@ def render():
                 "working_style": working_style
             }
 
-            save_texts_with_embeddings(profile)
+            #save_texts_with_embeddings(profile)
             next_step()
 
     render_progress_bar()
