@@ -1,8 +1,7 @@
 import streamlit as st
 
 def render_header():
-    st.image("images/header-glasshome.png", width="stretch")
-    st.markdown("<h1 style='text-align:center'>Co-Living Compatibility Matching</h1>", unsafe_allow_html=True)
+    st.image("images/header-option2.jpeg", width="stretch")
 
 def render_login_info():
     demo_mode = st.session_state.get("demo_mode", "prod")
