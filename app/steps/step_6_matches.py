@@ -3,6 +3,9 @@ import streamlit as st
 from state.navigation import go_to
 from ui.layout import render_header
 from utils.matching import find_matches
+import plotly.graph_objects as go
+import base64
+from PIL import Image
 
 
 def render():
@@ -10,27 +13,123 @@ def render():
 
     st.header("Your Matches")
     st.write(f"Showing matches for **{st.session_state.emailaddress}**")
+    st.write("Based on your neighborhood profile, you could fit well together with this with the context and people of this neighborhood!")
 
     demo_mode = st.session_state.get("demo_mode", "prod")
     if demo_mode == "sarah":
         col1, col2, col3 = st.columns([1, 3, 1])
         with col2:
+            """
             st.image(
                 "images/demo-cluster-sarah.png",
-                use_container_width=True,
+                width='stretch',
                 caption="Sarah — Top compatibility cluster",
             )
-        st.write("It describes a woman in her early 30s, working as a graphic designer in Stockholm. She values creativity, community engagement, and sustainable living.")
+            """
+
+            # Load your image
+            img_path = "images/demo-cluster-sarah.png"
+            img = Image.open(img_path)
+            img_width, img_height = img.size  # use the actual image size
+
+            # Encode the image to base64
+            with open(img_path, "rb") as f:
+                img_bytes = f.read()
+            img_b64 = base64.b64encode(img_bytes).decode()
+
+            fig = go.Figure()
+
+            # Add image as layout background
+            fig.add_layout_image(
+                dict(
+                    source=f"data:image/png;base64,{img_b64}",
+                    xref="x",
+                    yref="y",
+                    x=0,
+                    y=img_height,
+                    sizex=img_width,
+                    sizey=img_height,
+                    sizing="stretch",
+                    layer="below"
+                )
+            )
+
+            # Add invisible point with image in hover
+            fig.add_trace(
+                go.Scatter(
+                    x=[1335],
+                    y=[850],
+                    mode="markers",
+                    marker=dict(size=50, opacity=0),  # invisible marker
+                    hovertext="FIND OUT MORE →",
+                    hoverinfo="text"
+                )
+            )
+
+            fig.update_xaxes(showgrid=False, visible=False, range=[0, img_width])
+            fig.update_yaxes(showgrid=False, visible=False, range=[0, img_height])
+            fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
+
+            st.plotly_chart(fig)
+            st.button("FIND OUT MORE →")
 
     elif demo_mode == "tom":
         col1, col2, col3 = st.columns([1, 3, 1])
         with col2:
+            """
             st.image(
                 "images/demo-cluster-tom.png",
-                use_container_width=True,
+                width='stretch',
                 caption="Tom — Top compatibility cluster",
             )
-        st.write("It describes a man in his early 30s, working as a software developer in Berlin. He values privacy, efficiency, and a quiet living environment.")
+            """
+
+            # Load your image
+            img_path = "images/demo-cluster-tom.png"
+            img = Image.open(img_path)
+            img_width, img_height = img.size  # use the actual image size
+
+            # Encode the image to base64
+            with open(img_path, "rb") as f:
+                img_bytes = f.read()
+            img_b64 = base64.b64encode(img_bytes).decode()
+
+            fig = go.Figure()
+
+            # Add image as layout background
+            fig.add_layout_image(
+                dict(
+                    source=f"data:image/png;base64,{img_b64}",
+                    xref="x",
+                    yref="y",
+                    x=0,
+                    y=img_height,
+                    sizex=img_width,
+                    sizey=img_height,
+                    sizing="stretch",
+                    layer="below"
+                )
+            )
+
+            # Add invisible point with image in hover
+            fig.add_trace(
+                go.Scatter(
+                    x=[255],
+                    y=[370],
+                    mode="markers",
+                    marker=dict(size=50, opacity=0),  # invisible marker
+                    hovertext="FIND OUT MORE →",
+                    hoverinfo="text"
+                )
+            )
+
+            fig.update_xaxes(showgrid=False, visible=False, range=[0, img_width])
+            fig.update_yaxes(showgrid=False, visible=False, range=[0, img_height])
+            fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
+
+            st.plotly_chart(fig)
+            st.button("FIND OUT MORE →")
+
 
 
     st.subheader("Your profile data")
