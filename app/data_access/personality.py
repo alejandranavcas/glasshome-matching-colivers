@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from datetime import datetime
+from data_access.postgres import append_row
 
 # -----------------------------
 # Configuration
@@ -62,3 +63,5 @@ def save_personality_from_state(session_state) -> None:
         df_new.to_csv(PERSONALITY_PATH, mode="a", header=False, index=False)
     else:
         df_new.to_csv(PERSONALITY_PATH, index=False)
+
+    append_row("saved_answers_personality", row)

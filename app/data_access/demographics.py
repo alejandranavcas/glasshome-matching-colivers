@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from datetime import datetime
+from data_access.postgres import append_row
 
 # -----------------------------
 # Configuration
@@ -80,6 +81,8 @@ def save_demographics_from_state(session_state) -> None:
         df_new.to_csv(DEMOGRAPHICS_PATH, mode="a", header=False, index=False)
     else:
         df_new.to_csv(DEMOGRAPHICS_PATH, index=False)
+
+    append_row("saved_answers_demographics", row)
 
 def load_demographics(username: str) -> dict | None:
     """
