@@ -68,3 +68,23 @@ Unlock deeper insights about your personality, values, and preferences, and find
    ```
 
 The app will open automatically in your default browser at `http://localhost:8501`. If it doesn't, manually navigate to that URL.
+
+## Optional: Save data to Postgres (Render)
+
+By default, survey answers are saved to CSV files in `data/`.
+The app can also mirror each saved row into Postgres.
+
+1. Provision a PostgreSQL database (for example on Render).
+2. Add one of these environment variables to your app service:
+   - `DATABASE_URL` (preferred)
+   - `RENDER_POSTGRES_URL`
+   - `POSTGRES_URL`
+3. Redeploy the app.
+
+When one of those variables is present, new rows continue to be written to CSV and are also inserted into Postgres tables:
+
+- `saved_answers_demographics`
+- `saved_answers_practical`
+- `saved_answers_lifestyle`
+- `saved_answers_personality`
+- `saved_answers_values`

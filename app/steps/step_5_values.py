@@ -5,7 +5,7 @@ from openai import OpenAI
 from streamlit_sortables import sort_items
 
 from state.navigation import next_step, prev_step
-from data_access.profiles import save_texts_with_embeddings
+from data_access.profiles import save_texts_with_embeddings, save_texts_with_embeddings_2
 # from utils.validation import min_length
 
 from ui.layout import render_login_info, render_progress_bar
@@ -110,7 +110,7 @@ def render():
                 "working_style": working_style
             }
 
-            #save_texts_with_embeddings(profile)
+            save_texts_with_embeddings_2(profile)
             next_step()
 
     render_progress_bar()

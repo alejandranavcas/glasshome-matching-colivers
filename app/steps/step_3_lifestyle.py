@@ -2,6 +2,7 @@ import streamlit as st
 import csv
 import os
 import datetime
+from data_access.postgres import append_row
 
 from state.navigation import next_step, prev_step
 from ui.layout import render_login_info, render_progress_bar
@@ -199,6 +200,8 @@ def render():
                 if not file_exists:
                     writer.writeheader()
                 writer.writerow(row)
+
+            append_row("saved_answers_lifestyle", row)
             next_step()
 
     render_progress_bar()
