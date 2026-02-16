@@ -39,7 +39,7 @@ def render():
     req["contact_with_neighbours"] = contact_options[contact_value - 1]
 
     # Mix of household slider
-    st.write("How much importance do you place on a diverse mix of household types?")
+    st.write("How much importance do you place on a diverse mix of household types in your neighborhood? (e.g., singles, couples, families, seniors, children)")
     mix_options = ["Not important", "Neutral", "Important"]
     st.markdown(
         """
@@ -55,23 +55,23 @@ def render():
     mix_value = st.slider("", 1, 3, 2, key="mix_slider")
     req["mix_of_household"] = mix_options[mix_value - 1]
 
-    # Degree shared responsibility slider
-    st.write("What is your desired degree of shared responsibility?")
-    degree_options = ["Minimal involvement", "Occasional participation", "Moderate involvement", "Strong commitment; active participation"]
-    st.markdown(
-        """
-        <div style="display:flex; justify-content:space-between;
-                    font-size:0.85em; color:gray;">
-            <span>Minimal involvement</span>
-            <span>Occasional participation</span>
-            <span>Moderate involvement</span>
-            <span>Strong commitment; active participation</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    degree_value = st.slider("", 1, 4, 2, key="degree_slider")
-    req["degree_shared_responsibility"] = degree_options[degree_value - 1]
+    # Degree shared responsibility slider (Removed in Cycle 14 - Feb 2026)
+    #st.write("What is your desired degree of shared responsibility?")
+    #degree_options = ["Minimal involvement", "Occasional participation", "Moderate involvement", "Strong commitment; active participation"]
+    #st.markdown(
+    #    """
+    #    <div style="display:flex; justify-content:space-between;
+    #                font-size:0.85em; color:gray;">
+    #        <span>Minimal involvement</span>
+    #        <span>Occasional participation</span>
+    #        <span>Moderate involvement</span>
+    #        <span>Strong commitment; active participation</span>
+    #    </div>
+    #    """,
+    #    unsafe_allow_html=True
+    #)
+    #degree_value = st.slider("", 1, 4, 2, key="degree_slider")
+    #req["degree_shared_responsibility"] = degree_options[degree_value - 1]
 
     # Frequency shared activities slider
     st.write("How often would you like to share activities?")
@@ -130,7 +130,7 @@ def render():
         )
 
     req["forbidden_animals"] = st.multiselect(
-        "What animals would you NOT want to have in your living environment? (you may select multiple)",
+        "What animals would you NOT want to have in your neighborhood? (you may select multiple)",
         options=["dog", "cat", "rabbit", "hamster", "bird", "fish", "horse", "donkey", "cow", "other"],
     )
     if "other" in req["forbidden_animals"]:

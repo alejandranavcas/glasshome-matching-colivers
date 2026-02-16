@@ -120,21 +120,20 @@ def render():
     #)
 
     req["daily_management"] = st.multiselect(
-        "Public areas shared among neighbors require work (eg. cleaning, gardening, maintenance). Would you prefer contributing to that work or paying a fee for that work to be done?",
+        "Public areas shared among neighbors require work (eg. cleaning, gardening, maintenance). Do you want to be active in managing the community? or would you prefer it being managed for you?",
         options=[
             "Contribute to the work",
-            "Pay a fee for the work to be done"
+            "Work done externally"
         ],
         default=req.get("daily_management", [])
     )
 
     st.markdown("**How important are the following?**")
-
-    req["cleanliness_importance"] = _importance_slider("Cleanliness standard")
+    #req["cleanliness_importance"] = _importance_slider("Cleanliness standard") # Removed in Cycle 14 (Feb 2026)
     req["quiet_hours_importance"] = _importance_slider("Quiet hours")
-    req["booking_system_importance"] = _importance_slider("Booking system (shared spaces)")
+    #req["booking_system_importance"] = _importance_slider("Booking system (shared spaces)") # Removed in Cycle 14 (Feb 2026)
     req["guest_policy_importance"] = _importance_slider("Guest policy")
-    req["pet_policy_importance"] = _importance_slider("Pet policy")
+    #req["pet_policy_importance"] = _importance_slider("Pet policy") # Removed in Cycle 14 (Feb 2026)
 
     # -------------------------------------------------
     # Financial & Legal Expectations
