@@ -6,6 +6,7 @@ from utils.matching import find_matches
 import plotly.graph_objects as go
 import base64
 from PIL import Image
+from utils.pdf_report import generate_pdf_profile, generate_pdf_matches
 
 
 def render():
@@ -13,6 +14,22 @@ def render():
 
     st.header("Congratulations!")
     st.write(f"You just took the first step towards your future Glasshome. Your personal brochure is cooking and will be delivered to your inbox {st.session_state.emailaddress} soon.")
+
+    user_data = {
+        "name": st.session_state.fullname,
+        "email": st.session_state.emailaddress,
+        "resident_type": st.session_state.resident_type,
+        "householdcomposition": st.session_state.householdcomposition,
+        "user_requirements": st.session_state.user_requirements,
+        "user_personality": st.session_state.user_personality
+    }
+
+    st.download_button(
+        label="Download My Profile PDF",
+        data=generate_pdf_profile(user_data),
+        file_name="glasshome_profile.pdf",
+        mime="application/pdf"
+    )
 
     demo_mode = st.session_state.get("demo_mode", "prod")
     if demo_mode == "sarah":
@@ -154,6 +171,12 @@ def render():
     else:
         st.subheader("Top 3 Compatibility Matches")
         st.dataframe(matches)
+        st.download_button(
+            label="Download My Matches PDF",
+            data=generate_pdf_matches(user_data, matches),
+            file_name="glasshome_matches.pdf",
+            mime="application/pdf"
+        )
 
     if demo_mode == "dev":
         st.subheader("Your profile data")

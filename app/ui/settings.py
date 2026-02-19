@@ -38,7 +38,18 @@ def apply_theme():
             border: none;
         }
 
+        .stDownloadButton > button {
+            border-radius: var(--control-radius);
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+        }
+
         .stButton > button:hover {
+            background-color: #D1DDA6;
+        }
+
+        .stDownloadButton > button:hover {
             background-color: #D1DDA6;
         }
         </style>
