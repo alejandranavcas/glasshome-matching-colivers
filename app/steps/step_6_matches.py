@@ -1,5 +1,6 @@
 import streamlit as st
 
+from data_access.credentials import set_questionnaire_completed
 from state.navigation import go_to
 from ui.layout import render_header
 from utils.matching import find_matches
@@ -32,6 +33,14 @@ def render():
     )
 
     demo_mode = st.session_state.get("demo_mode", "prod")
+
+    # Set questionnaire as completed for logged in or signed up users
+    auth_mode = st.session_state.get("auth_mode")
+    if auth_mode in ("login", "signup") and st.session_state.get("emailaddress"):
+        if not st.session_state.get("questionnaire_marked_completed", False):
+            set_questionnaire_completed(st.session_state.emailaddress)
+            st.session_state.questionnaire_marked_completed = True
+
     if demo_mode == "sarah":
         st.subheader("Your Matches")
         st.write(f"Showing matches for **{st.session_state.emailaddress}**")
