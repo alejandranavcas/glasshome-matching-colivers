@@ -13,6 +13,9 @@ from ui.layout import render_login_info, render_progress_bar
 def render():
     render_login_info()
     st.header("Step 5: Tell Us About Your Values")
+    col_left, col_video, col_right = st.columns([1, 2, 1])
+    with col_video:
+        st.video("images/video-placeholder.mp4")
 
     share_personal_feelings = audio_transcription_input(
         "How would you share personal feelings like fears or joys in a neighborhood?",

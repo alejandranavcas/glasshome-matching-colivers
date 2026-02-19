@@ -11,6 +11,9 @@ from ui.layout import render_login_info, render_progress_bar
 def render():
     render_login_info()
     st.header("Step 3: Lifestyle Preferences")
+    col_left, col_video, col_right = st.columns([1, 2, 1])
+    with col_video:
+        st.video("images/video-placeholder.mp4")
 
     req = st.session_state.user_requirements
 

@@ -19,6 +19,10 @@ def render():
         Your responses will help us understand your personality traits better and improve community matching.
         """
     )
+    col_left, col_video, col_right = st.columns([1, 2, 1])
+    with col_video:
+        st.video("images/video-placeholder.mp4")
+
     st.write("Indicate how much you agree or disagree with the following statements.")
 
     responses = {}
