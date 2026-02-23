@@ -57,7 +57,11 @@ def render():
         "Infrastructure (school, supermarkets, shopping centre, hospital)"
     ]
 
-    healthy_environments = sort_items(options, key="healthy_sort")
+    healthy_environments = sort_items(
+        options,
+        key="healthy_sort",
+        custom_style=NUMBERED_SORTABLE_STYLE,
+    )
 
     you_creative = audio_transcription_input(
         "Do you see yourself as a creative? In which ways are you expressing your creativity?",
@@ -122,6 +126,28 @@ def render():
 # -----------------------------
 # Helper functions
 # -----------------------------
+
+NUMBERED_SORTABLE_STYLE = """
+.sortable-component {
+    counter-reset: item;
+}
+
+.sortable-container-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sortable-item {
+    width: 100%;
+}
+
+.sortable-item::before {
+    content: counter(item) ". ";
+    counter-increment: item;
+    font-weight: 600;
+}
+"""
 
 def get_openai_client():
     demo_mode = st.session_state.get("demo_mode", "prod")
