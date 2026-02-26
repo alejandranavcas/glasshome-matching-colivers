@@ -15,16 +15,19 @@ def render():
     st.session_state.birthdate = st.date_input("Birth date:", value=st.session_state.birthdate if st.session_state.birthdate else None, min_value=datetime.date(1950, 1, 1), max_value=datetime.date.today())
     st.session_state.nationality = st.text_input("Nationality:", st.session_state.nationality, placeholder="e.g. Swedish")
     st.session_state.emailaddress = st.text_input("Email address:", st.session_state.emailaddress, placeholder="e.g. email@example.com")
+
+    resident_type_options = ["Founder: I want to start a community", "Joiner: I want to join an existing community"]
     st.session_state.resident_type = st.selectbox(
             "Resident type:",
-            options=["Founder: I want to start a community", "Joiner: I want to join an existing community"],
-            index=None
+            options=resident_type_options,
+            index=resident_type_options.index(st.session_state.resident_type) if st.session_state.resident_type in resident_type_options else None
             )
 
+    householdcomposition_options = ["Alone", "With partner", "With family", "With friends"]
     st.session_state.householdcomposition = st.selectbox(
             "With whom will you be living?",
-            options=["Alone", "With partner", "With family", "With friends"],
-            index=None
+            options=householdcomposition_options,
+            index=householdcomposition_options.index(st.session_state.householdcomposition) if st.session_state.householdcomposition in householdcomposition_options else None
         )
     st.caption("E.g. living alone, with partner, with family, with friends, etc.")
 

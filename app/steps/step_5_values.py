@@ -13,6 +13,9 @@ from ui.layout import render_login_info, render_progress_bar
 def render():
     render_login_info()
     st.header("Step 5: Tell Us About Your Values")
+    col_left, col_video, col_right = st.columns([1, 2, 1])
+    with col_video:
+        st.video("images/video-placeholder.mp4")
 
     share_personal_feelings = audio_transcription_input(
         "How would you share personal feelings like fears or joys in a neighborhood?",
@@ -29,14 +32,15 @@ def render():
         "group_decision"
     )
 
+    mistake_reaction_options = [
+        "They give me space to fix the mistake",
+        "They show compassion and understanding and support me mentally",
+        "They support me in fixing the mistake and support me proactively"
+    ]
     mistake_reaction = st.selectbox(
         "When you make a mistake, what reaction from others helps you most?",
-        options=[
-            "They give me space to fix the mistake",
-            "They show compassion and understanding and support me mentally",
-            "They support me in fixing the mistake and support me proactively"
-        ],
-        index=None
+        options=mistake_reaction_options,
+        index=mistake_reaction_options.index(st.session_state.get("mistake_reaction")) if st.session_state.get("mistake_reaction") in mistake_reaction_options else None
     )
 
     giving_importance = audio_transcription_input(
@@ -54,34 +58,46 @@ def render():
         "Infrastructure (school, supermarkets, shopping centre, hospital)"
     ]
 
-    healthy_environments = sort_items(options, key="healthy_sort")
+    saved_healthy_environments = st.session_state.get("healthy_environments", [])
+    if isinstance(saved_healthy_environments, list):
+        ordered_saved = [item for item in saved_healthy_environments if item in options]
+        missing_defaults = [item for item in options if item not in ordered_saved]
+        options = ordered_saved + missing_defaults
+
+    healthy_environments = sort_items(
+        options,
+        key="healthy_sort",
+        custom_style=NUMBERED_SORTABLE_STYLE,
+    )
 
     you_creative = audio_transcription_input(
         "Do you see yourself as a creative? In which ways are you expressing your creativity?",
         "you_creative"
     )
 
+    sharing_unfinished_ideas_options = [
+        "Very comfortable - I share my ideas before they are ready at any time",
+        "Comfortable, but I take some time and effort to make my ideas presentable before sharing",
+        "I rather get them to an almost-finished state before I bother others",
+        "I usually finish a concept, before presenting an idea to a group. This way everyone can understand what I mean."
+    ]
     sharing_unfinished_ideas = st.selectbox(
         "How comfortable are you in sharing ideas before they feel finished?",
-        options=[
-            "Very comfortable - I share my ideas before they are ready at any time",
-            "Comfortable, but I take some time and effort to make my ideas presentable before sharing",
-            "I rather get them to an almost-finished state before I bother others",
-            "I usually finish a concept, before presenting an idea to a group. This way everyone can understand what I mean."
-        ],
-        index=None
+        options=sharing_unfinished_ideas_options,
+        index=sharing_unfinished_ideas_options.index(st.session_state.get("sharing_unfinished_ideas")) if st.session_state.get("sharing_unfinished_ideas") in sharing_unfinished_ideas_options else None
     )
 
+    working_style_options = [
+        "I prefer to work alone and only meet the group to define targets and distribute work (90/10)",
+        "I prefer to work alone most of the times, but its good to have some breaks to align (70/30)",
+        "I prefer an equal mixture of groupwork and private work. (50/50)",
+        "I prefer work together most of the times but its good to have some breathing space between (30/70)",
+        "I prefer doing everything together and only split up when its truely necessary"
+    ]
     working_style = st.selectbox(
         "Which working style do you prefer?",
-        options=[
-            "I prefer to work alone and only meet the group to define targets and distribute work (90/10)",
-            "I prefer to work alone most of the times, but its good to have some breaks to align (70/30)",
-            "I prefer an equal mixture of groupwork and private work. (50/50)",
-            "I prefer work together most of the times but its good to have some breathing space between (30/70)",
-            "I prefer doing everything together and only split up when its truely necessary"
-        ],
-        index=None
+        options=working_style_options,
+        index=working_style_options.index(st.session_state.get("working_style")) if st.session_state.get("working_style") in working_style_options else None
     )
 
 
@@ -119,6 +135,28 @@ def render():
 # -----------------------------
 # Helper functions
 # -----------------------------
+
+NUMBERED_SORTABLE_STYLE = """
+.sortable-component {
+    counter-reset: item;
+}
+
+.sortable-container-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sortable-item {
+    width: 100%;
+}
+
+.sortable-item::before {
+    content: counter(item) ". ";
+    counter-increment: item;
+    font-weight: 600;
+}
+"""
 
 def get_openai_client():
     demo_mode = st.session_state.get("demo_mode", "prod")

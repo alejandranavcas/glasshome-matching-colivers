@@ -9,8 +9,10 @@ from data_access.postgres import append_row
 
 DATA_DIR = os.path.join("..", "data")
 PERSONALITY_FILE = "saved_answers_personality.csv"
+PERSONALITY_RESPONSES_FILE = "saved_answers_personality_responses.csv"
 
 PERSONALITY_PATH = os.path.join(DATA_DIR, PERSONALITY_FILE)
+PERSONALITY_RESPONSES_PATH = os.path.join(DATA_DIR, PERSONALITY_RESPONSES_FILE)
 
 PERSONALITY_COLUMNS = [
     "timestamp",
@@ -20,6 +22,12 @@ PERSONALITY_COLUMNS = [
     "conscientiousness",
     "neuroticism",
     "openness",
+]
+
+PERSONALITY_RESPONSE_COLUMNS = [
+    "timestamp",
+    "username",
+    *[f"bfi_{i}" for i in range(1, 45)],
 ]
 
 # -----------------------------
@@ -65,3 +73,27 @@ def save_personality_from_state(session_state) -> None:
         df_new.to_csv(PERSONALITY_PATH, index=False)
 
     append_row("saved_answers_personality", row)
+
+
+def save_personality_responses_from_state(session_state) -> None:
+    """
+    Persist raw BFI item responses (bfi_1..bfi_44) from st.session_state.
+    """
+    _ensure_data_dir()
+
+    row = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "username": session_state.emailaddress,
+    }
+
+    for i in range(1, 45):
+        row[f"bfi_{i}"] = session_state.get(f"bfi_{i}")
+
+    df_new = pd.DataFrame([row], columns=PERSONALITY_RESPONSE_COLUMNS)
+
+    if os.path.exists(PERSONALITY_RESPONSES_PATH):
+        df_new.to_csv(PERSONALITY_RESPONSES_PATH, mode="a", header=False, index=False)
+    else:
+        df_new.to_csv(PERSONALITY_RESPONSES_PATH, index=False)
+
+    append_row("saved_answers_personality_responses", row)

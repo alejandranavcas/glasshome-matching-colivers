@@ -1,10 +1,36 @@
 import streamlit as st
 import csv
 import os
+import datetime
 from data_access.postgres import append_row
 
 from state.navigation import next_step, prev_step
 from ui.layout import render_login_info, render_progress_bar
+
+
+PRACTICAL_CSV_COLUMNS = [
+    "timestamp",
+    "username",
+    "desired_location",
+    "physical_environment",
+    "size_of_community",
+    "regime_of_sharing",
+    "private_dwelling",
+    "daily_management",
+    "quiet_hours_importance",
+    "guest_policy_importance",
+    "legal_structure",
+    "budget_currency",
+    "available_budget_purchase",
+    "monthly_budget_rent",
+    "other_practical_requirements",
+]
+
+
+def _valid_multiselect_defaults(options: list[str], selected_values) -> list[str]:
+    if not isinstance(selected_values, list):
+        return []
+    return [value for value in selected_values if value in options]
 
 
 def render():
@@ -12,6 +38,9 @@ def render():
 
     st.header("Step 2: Practical Requirements")
     st.write("These are the requirements you have for your desired community. Please indicate your choices.")
+    col_left, col_video, col_right = st.columns([1, 2, 1])
+    with col_video:
+        st.video("images/video-placeholder.mp4")
 
     req = st.session_state.user_requirements
 
@@ -38,16 +67,24 @@ def render():
         "Switzerland, Zurich",
         "Other regions"
     ]
+    saved_location = req.get("desired_location", "")
+    if saved_location in location_options:
+        location_index = location_options.index(saved_location)
+    elif saved_location and saved_location != "--Select a location--":
+        location_index = location_options.index("Other regions")
+    else:
+        location_index = 0
+
     selected_location = st.selectbox(
         "What is your desired location (country, city or region)?",
         options=location_options,
-        index=0
+        index=location_index
     )
 
     if selected_location == "Other regions":
         req["desired_location"] = st.text_input(
             "Please specify your desired location",
-            value=req.get("desired_location", "") if req.get("desired_location") != "Other regions" else "",
+            value=saved_location if saved_location not in ("", "Other regions") else "",
             placeholder="e.g. Spain, Barcelona"
         )
     else:
@@ -60,7 +97,10 @@ def render():
             "Suburban",
             "Rural / nature-based"
         ],
-        default=req.get("physical_environment", [])
+        default=_valid_multiselect_defaults(
+            ["Urban / city-centre", "Suburban", "Rural / nature-based"],
+            req.get("physical_environment", [])
+        )
     )
 
     req["size_of_community"] = st.multiselect(
@@ -70,7 +110,10 @@ def render():
             "Medium (10–40)",
             "Large (40–100)"
         ],
-        default=req.get("size_of_community", [])
+        default=_valid_multiselect_defaults(
+            ["Small (<10 people)", "Medium (10–40)", "Large (40–100)"],
+            req.get("size_of_community", [])
+        )
     )
 
     req["regime_of_sharing"] = st.multiselect(
@@ -85,7 +128,19 @@ def render():
             "Living rooms and lounges",
             "Minimal/no shared spaces"
         ],
-        default=req.get("regime_of_sharing", [])
+        default=_valid_multiselect_defaults(
+            [
+                "Gardens and outdoor spaces",
+                "Workshops and hobby rooms",
+                "Guest rooms",
+                "Garage and parking",
+                "Kitchen and dining areas",
+                "Laundry facilities",
+                "Living rooms and lounges",
+                "Minimal/no shared spaces"
+            ],
+            req.get("regime_of_sharing", [])
+        )
     )
 
     req["private_dwelling"] = st.multiselect(
@@ -98,7 +153,17 @@ def render():
             "Guest room",
             "Other"
         ],
-        default=req.get("private_dwelling", [])
+        default=_valid_multiselect_defaults(
+            [
+                "Full kitchen",
+                "Kitchenette",
+                "Private outdoor space",
+                "Full bathroom",
+                "Guest room",
+                "Other"
+            ],
+            req.get("private_dwelling", [])
+        )
     )
 
     # -------------------------------------------------
@@ -120,21 +185,29 @@ def render():
     #)
 
     req["daily_management"] = st.multiselect(
-        "Public areas shared among neighbors require work (eg. cleaning, gardening, maintenance). Would you prefer contributing to that work or paying a fee for that work to be done?",
+        "Public areas shared among neighbors require work (eg. cleaning, gardening, maintenance). Do you want to be active in managing the community? or would you prefer it being managed for you?",
         options=[
             "Contribute to the work",
-            "Pay a fee for the work to be done"
+            "Work done externally"
         ],
-        default=req.get("daily_management", [])
+        default=_valid_multiselect_defaults(
+            ["Contribute to the work", "Work done externally"],
+            req.get("daily_management", [])
+        )
     )
 
     st.markdown("**How important are the following?**")
-
-    req["cleanliness_importance"] = _importance_slider("Cleanliness standard")
-    req["quiet_hours_importance"] = _importance_slider("Quiet hours")
-    req["booking_system_importance"] = _importance_slider("Booking system (shared spaces)")
-    req["guest_policy_importance"] = _importance_slider("Guest policy")
-    req["pet_policy_importance"] = _importance_slider("Pet policy")
+    #req["cleanliness_importance"] = _importance_slider("Cleanliness standard") # Removed in Cycle 14 (Feb 2026)
+    req["quiet_hours_importance"] = _importance_slider(
+        "Quiet hours",
+        req.get("quiet_hours_importance", 3)
+    )
+    #req["booking_system_importance"] = _importance_slider("Booking system (shared spaces)") # Removed in Cycle 14 (Feb 2026)
+    req["guest_policy_importance"] = _importance_slider(
+        "Guest policy",
+        req.get("guest_policy_importance", 3)
+    )
+    #req["pet_policy_importance"] = _importance_slider("Pet policy") # Removed in Cycle 14 (Feb 2026)
 
     # -------------------------------------------------
     # Financial & Legal Expectations
@@ -148,7 +221,13 @@ def render():
             "Rental agreement",
             "Purchase (long-term ownership)"
         ],
-        index=None
+        index=[
+            "Rental agreement",
+            "Purchase (long-term ownership)"
+        ].index(req.get("legal_structure")) if req.get("legal_structure") in [
+            "Rental agreement",
+            "Purchase (long-term ownership)"
+        ] else None
     )
 
     st.write("Housing budget for the entire household:")
@@ -161,13 +240,13 @@ def render():
         )
     with col2_budget:
         if req["legal_structure"] == "Rental agreement":
+            req["available_budget_purchase"] = 0
             req["monthly_budget_rent"] = st.number_input(
                 "What can you spend on the rent per month?",
                 value=req.get("monthly_budget_rent", 0),
                 min_value=0,
                 step=50
             )
-            req["available_budget_purchase"] = 0
         if req["legal_structure"] == "Purchase (long-term ownership)":
             req["available_budget_purchase"] = st.number_input(
                 "What is your available budget for purchase of your home?",
@@ -197,14 +276,31 @@ def render():
             if _validate(req):
                 # Save answers to CSV
                 csv_file_path = os.path.join("..", "data", "saved_answers_practical.csv")
+                row = {
+                    "timestamp": datetime.datetime.utcnow().isoformat(),
+                    "username": st.session_state.emailaddress,
+                    "desired_location": req.get("desired_location", ""),
+                    "physical_environment": req.get("physical_environment", []),
+                    "size_of_community": req.get("size_of_community", []),
+                    "regime_of_sharing": req.get("regime_of_sharing", []),
+                    "private_dwelling": req.get("private_dwelling", []),
+                    "daily_management": req.get("daily_management", []),
+                    "quiet_hours_importance": req.get("quiet_hours_importance", 3),
+                    "guest_policy_importance": req.get("guest_policy_importance", 3),
+                    "legal_structure": req.get("legal_structure", ""),
+                    "budget_currency": req.get("budget_currency", "EUR (€)"),
+                    "available_budget_purchase": req.get("available_budget_purchase", 0),
+                    "monthly_budget_rent": req.get("monthly_budget_rent", 0),
+                    "other_practical_requirements": req.get("other_practical_requirements", ""),
+                }
                 file_exists = os.path.isfile(csv_file_path)
                 with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
-                    writer = csv.DictWriter(file, fieldnames=req.keys())
+                    writer = csv.DictWriter(file, fieldnames=PRACTICAL_CSV_COLUMNS, extrasaction="ignore")
                     if not file_exists:
                         writer.writeheader()
-                    writer.writerow(req)
+                    writer.writerow(row)
 
-                append_row("saved_answers_practical", dict(req))
+                append_row("saved_answers_practical", row)
                 next_step()
 
     render_progress_bar()
@@ -214,7 +310,7 @@ def render():
 # Helpers
 # -------------------------------------------------
 
-def _importance_slider(label: str) -> int:
+def _importance_slider(label: str, default_value: int = 3) -> int:
     st.write(label)
     st.markdown(
         """
@@ -226,7 +322,7 @@ def _importance_slider(label: str) -> int:
         """,
         unsafe_allow_html=True
     )
-    return st.slider("", 1, 5, 3, key=f"{label}_slider")
+    return st.slider("", 1, 5, int(default_value), key=f"{label}_slider")
 
 
 def _validate(req: dict) -> bool:

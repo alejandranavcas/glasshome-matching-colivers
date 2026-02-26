@@ -5,6 +5,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 def find_matches(state):
 
+    # Apply hard filters in practical
+    df_practical = pd.read_csv("../data/saved_answers_practical.csv", on_bad_lines='skip') # skip the bad lines due to inconsistent column counts across rows
+
+
+
     # Apply hard filters in lifestyle
     df_lifestyle = pd.read_csv("../data/saved_answers_lifestyle.csv", on_bad_lines='skip') # skip the bad lines due to inconsistent column counts across rows
 
@@ -14,14 +19,14 @@ def find_matches(state):
     requirements_regime_of_sharing = state.user_requirements["regime_of_sharing"]
     requirements_private_dwelling = state.user_requirements.get("private_dwelling")
 
-    df = df_lifestyle[
-        df_lifestyle["physical_environment"]
+    df = df_practical[
+        df_practical["physical_environment"]
             .apply(lambda x: any(env in x for env in requirements_physical_env)) &
-        df_lifestyle["size_of_community"]
+        df_practical["size_of_community"]
             .apply(lambda x: any(size in x for size in requirements_size_of_community)) &
-        df_lifestyle["regime_of_sharing"]
+        df_practical["regime_of_sharing"]
             .apply(lambda x: any(regime in x for regime in requirements_regime_of_sharing)) &
-        df_lifestyle["private_dwelling"]
+        df_practical["private_dwelling"]
             .apply(lambda x: any(dwelling in x for dwelling in requirements_private_dwelling))
     ]
 
