@@ -1,7 +1,7 @@
 import streamlit as st
 
 from data_access.credentials import set_questionnaire_completed
-from state.navigation import go_to
+from state.reset import reset_session_state
 from ui.layout import render_header
 from utils.matching import find_matches
 import plotly.graph_objects as go
@@ -164,7 +164,7 @@ def render():
     # If demo mode, skip matching
     if demo_mode in ("sarah", "tom"):
         if st.button("Start Over"):
-            go_to(0)
+            reset_session_state()
         return
 
     # Else, find matches based on user input
@@ -202,4 +202,4 @@ def render():
         st.write(st.session_state.working_style)
 
     if st.button("Start Over"):
-        go_to(0)
+        reset_session_state()
