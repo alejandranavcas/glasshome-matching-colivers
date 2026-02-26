@@ -9,6 +9,7 @@ from psycopg2 import sql
 
 
 LOGGER = logging.getLogger(__name__)
+INGESTED_AT_COLUMN = "_db_created_at"
 
 
 def _get_database_url() -> str | None:
@@ -38,7 +39,11 @@ def _ensure_table_and_columns(cur, table_name: str, columns: list[str]) -> None:
     create_columns = [sql.SQL("id BIGSERIAL PRIMARY KEY")]
     for column in columns:
         create_columns.append(sql.SQL("{} TEXT").format(sql.Identifier(column)))
-    create_columns.append(sql.SQL("created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()"))
+    create_columns.append(
+        sql.SQL("{} TIMESTAMPTZ NOT NULL DEFAULT NOW()").format(
+            sql.Identifier(INGESTED_AT_COLUMN)
+        )
+    )
 
     cur.execute(
         sql.SQL("CREATE TABLE IF NOT EXISTS {} ({})").format(
@@ -81,12 +86,14 @@ def append_row(table_name: str, row: dict[str, Any]) -> None:
         LOGGER.warning("Skipping Postgres write: invalid table name '%s'", table_name)
         return
 
-    normalized_items: list[tuple[str, Any]] = []
+    normalized_items_map: dict[str, Any] = {}
     for raw_key, raw_value in row.items():
         safe_key = _sanitize_identifier(raw_key)
         if not safe_key:
             continue
-        normalized_items.append((safe_key, _normalize_value(raw_value)))
+        normalized_items_map[safe_key] = _normalize_value(raw_value)
+
+    normalized_items = list(normalized_items_map.items())
 
     if not normalized_items:
         LOGGER.warning("Skipping Postgres write: row has no valid columns")

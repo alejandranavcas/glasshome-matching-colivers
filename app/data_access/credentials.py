@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit_authenticator as stauth
+from data_access.postgres import append_row
 
 
 CREDENTIALS_FILE = (
@@ -91,16 +92,18 @@ def create_user(email: str, password: str) -> tuple[bool, str]:
     user_id = str(len(rows) + 1)
     created_at = datetime.now(timezone.utc).isoformat()
 
-    rows.append(
-        {
-            "user_id": user_id,
-            "email": normalized_email,
-            "password_hash": _hash_password(password),
-            "created_at": created_at,
-            "questionnaire_completed": "False",
-        }
-    )
+    row = {
+        "user_id": user_id,
+        "email": normalized_email,
+        "password_hash": _hash_password(password),
+        "created_at": created_at,
+        "questionnaire_completed": "False",
+    }
+
+    rows.append(row)
     _write_rows(rows)
+
+    append_row("saved_user_credentials", row)
     return True, "Account created successfully."
 
 

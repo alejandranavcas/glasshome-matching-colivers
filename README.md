@@ -87,4 +87,6 @@ When one of those variables is present, new rows continue to be written to CSV a
 - `saved_answers_practical`
 - `saved_answers_lifestyle`
 - `saved_answers_personality`
+- `saved_answers_personality_responses`
 - `saved_answers_values`
+- `saved_user_credentials`

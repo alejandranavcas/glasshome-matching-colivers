@@ -1,5 +1,6 @@
 import streamlit as st
 from data_access.credentials import authenticate_user, create_user
+from data_access.resume import load_user_progress
 
 from state.navigation import next_step
 from state.navigation import go_to
@@ -38,9 +39,51 @@ def render():
                 if not is_authenticated:
                     st.error(message)
                 else:
+                    normalized_email = login_email.strip().lower()
+                    progress = load_user_progress(normalized_email)
+
                     st.session_state.auth_mode = "login"
-                    st.session_state.emailaddress = login_email.strip().lower()
-                    next_step()
+                    st.session_state.emailaddress = normalized_email
+
+                    for key, value in progress["demographics"].items():
+                        st.session_state[key] = value
+
+                    if progress["requirements"]:
+                        st.session_state.user_requirements.update(progress["requirements"])
+
+                    if progress["personality"]:
+                        st.session_state.user_personality.update(progress["personality"])
+
+                    for key, value in progress.get("personality_responses", {}).items():
+                        st.session_state[key] = value
+
+                    for key, value in progress["values"].items():
+                        st.session_state[key] = value
+
+                    contact_options = ["Only when necessary", "Low", "Moderate", "Very high"]
+                    mix_options = ["Not important", "Neutral", "Important"]
+                    freq_options = ["Rarely", "Occasionally", "Once a week", "Several times a week", "Daily"]
+
+                    contact_value = st.session_state.user_requirements.get("contact_with_neighbours")
+                    if contact_value in contact_options:
+                        st.session_state.contact_slider = contact_options.index(contact_value) + 1
+
+                    mix_value = st.session_state.user_requirements.get("mix_of_household")
+                    if mix_value in mix_options:
+                        st.session_state.mix_slider = mix_options.index(mix_value) + 1
+
+                    freq_value = st.session_state.user_requirements.get("frequency_shared_activities")
+                    if freq_value in freq_options:
+                        st.session_state.freq_slider = freq_options.index(freq_value) + 1
+
+                    st.session_state["Quiet hours_slider"] = int(
+                        st.session_state.user_requirements.get("quiet_hours_importance", 3)
+                    )
+                    st.session_state["Guest policy_slider"] = int(
+                        st.session_state.user_requirements.get("guest_policy_importance", 3)
+                    )
+
+                    go_to(progress["resume_step"])
 
     with signup_tab:
         with st.form("signup_form"):
