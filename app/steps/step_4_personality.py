@@ -26,71 +26,54 @@ def render():
     st.write("Indicate how much you agree or disagree with the following statements.")
 
     responses = {}
-
     items = list(BFI_QUESTIONS.items())
-    half = len(items) // 2
-    col1_items = items[:half]
-    col2_items = items[half:]
+    page_sizes = [7, 7, 6, 6, 6, 6, 6]
+    total_pages = len(page_sizes)
+    if 'personality_page' not in st.session_state:
+        st.session_state['personality_page'] = 0
+    page = st.session_state['personality_page']
 
-    col1, col2 = st.columns(2, gap="large")
+    # Calculate start and end indices for current page
+    start_idx = sum(page_sizes[:page])
+    end_idx = start_idx + page_sizes[page]
+    page_items = items[start_idx:end_idx]
 
-    with col1:
-        for item_num, text in col1_items:
-            st.markdown(f"**{item_num}. {text}**")
+    for item_num, text in page_items:
+        st.markdown(f"**{item_num}. {text}**")
+        st.markdown(
+            """
+            <div style="display:flex; justify-content:space-between;
+                        font-size:0.85em; color:gray;">
+                <span>Disagree strongly</span>
+                <span>Agree strongly</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        responses[item_num] = st.slider(
+            "",
+            1,
+            5,
+            value=st.session_state.get(f"bfi_{item_num}", 3),
+            key=f"bfi_{item_num}",
+        )
 
-            st.markdown(
-                """
-                <div style="display:flex; justify-content:space-between;
-                            font-size:0.85em; color:gray;">
-                    <span>Disagree strongly</span>
-                    <span>Agree strongly</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            responses[item_num] = st.slider(
-                "",
-                1,
-                5,
-                value=st.session_state.get(f"bfi_{item_num}", 3),
-                key=f"bfi_{item_num}",
-            )
-
-    with col2:
-        for item_num, text in col2_items:
-            st.markdown(f"**{item_num}. {text}**")
-
-            st.markdown(
-                """
-                <div style="display:flex; justify-content:space-between;
-                            font-size:0.85em; color:gray;">
-                    <span>Disagree strongly</span>
-                    <span>Agree strongly</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            responses[item_num] = st.slider(
-                "",
-                1,
-                5,
-                value=st.session_state.get(f"bfi_{item_num}", 3),
-                key=f"bfi_{item_num}",
-            )
-
-    col1, col2 = st.columns([7, 1])
-
+    col1, col2, col3 = st.columns([2, 6, 2])
     with col1:
         if st.button("← Back"):
-            prev_step()
-
-    with col2:
+            if page > 0:
+                st.session_state['personality_page'] -= 1
+            else:
+                prev_step()
+    with col3:
         if st.button("Next →"):
-            st.session_state.user_personality = compute_personality(responses)
-            save_personality_responses_from_state(st.session_state)
-            save_personality_from_state(st.session_state)
-            next_step()
+            if page < total_pages - 1:
+                st.session_state['personality_page'] += 1
+                st.rerun()
+            else:
+                st.session_state.user_personality = compute_personality({k: st.session_state.get(f"bfi_{k}", 3) for k in BFI_QUESTIONS.keys()})
+                save_personality_responses_from_state(st.session_state)
+                save_personality_from_state(st.session_state)
+                next_step()
 
     render_progress_bar()

@@ -22,14 +22,39 @@ def render_login_info():
 
 def render_progress_bar():
     """Display a progress bar showing current step out of total steps."""
-    survey_start_step = 2  # step_1_demographics
-    survey_end_step = 6    # step_5_values
-    total_steps = survey_end_step - survey_start_step + 1
-    current_step = st.session_state.get("step", survey_start_step)
+    # Define sub-steps for each main step
+    step_substeps = {
+        2: 1,  # demographics
+        3: 4,  # practical (4 pages)
+        4: 3,  # lifestyle (3 pages)
+        5: 7,  # personality (7 pages)
+        6: 3,  # values (3 pages)
+    }
+    survey_start_step = 2
+    survey_end_step = 6
+    # Calculate total steps
+    total_steps = sum(step_substeps.values())
 
-    bounded_step = min(max(current_step, survey_start_step), survey_end_step)
-    display_step = bounded_step - survey_start_step + 1
-    progress = (bounded_step - survey_start_step) / (survey_end_step - survey_start_step)
+    # Determine current step and sub-step
+    main_step = st.session_state.get("step", survey_start_step)
+    sub_step = 0
+    if main_step == 3:
+        sub_step = st.session_state.get("practical_page", 0)
+    elif main_step == 4:
+        sub_step = st.session_state.get("lifestyle_page", 0)
+    elif main_step == 5:
+        sub_step = st.session_state.get("personality_page", 0)
+    elif main_step == 6:
+        sub_step = st.session_state.get("values_page", 0)
+
+    # Calculate display step
+    display_step = 1
+    for s in range(survey_start_step, main_step):
+        display_step += step_substeps.get(s, 1)
+    display_step += sub_step
+    # Clamp display_step
+    display_step = min(display_step, total_steps)
+    progress = (display_step - 1) / (total_steps - 1)
 
     st.markdown("---")
     st.progress(progress)
