@@ -72,7 +72,7 @@ def generate_pdf_profile(user_data):
     elements.append(Paragraph("Your Glasshome User Profile", title_style))
     elements.append(Spacer(1, 0.3 * inch))
 
-    elements.append(Paragraph(f"<b>Name:</b> {user_data['name']}", styles["Normal"]))
+    elements.append(Paragraph(f"<b>Name:</b> {user_data['fullname']}", styles["Normal"]))
     elements.append(Paragraph(f"<b>Email:</b> {user_data['email']}", styles["Normal"]))
     elements.append(Paragraph(f"<b>Resident Type:</b> {user_data['resident_type']}", styles["Normal"]))
     elements.append(Paragraph(f"<b>Household Composition:</b> {user_data['householdcomposition']}", styles["Normal"]))
@@ -193,7 +193,7 @@ def generate_pdf_matches(user_data, matches):
     elements.append(Paragraph("Your Glasshome Matches", title_style))
     elements.append(Spacer(1, 0.3 * inch))
 
-    elements.append(Paragraph(f"<b>Name:</b> {user_data['name']}", styles["Normal"]))
+    elements.append(Paragraph(f"<b>Name:</b> {user_data['fullname']}", styles["Normal"]))
     elements.append(Paragraph(f"<b>Email:</b> {user_data['email']}", styles["Normal"]))
     elements.append(Paragraph(f"<b>Resident Type:</b> {user_data['resident_type']}", styles["Normal"]))
     elements.append(Paragraph(f"<b>Household Composition:</b> {user_data['householdcomposition']}", styles["Normal"]))
@@ -210,7 +210,7 @@ def generate_pdf_matches(user_data, matches):
         for index, row in matches.iterrows():
             match_info = f"""
             <b>Match {index + 1}:</b><br/>
-            Name: {row['name']}<br/>
+            Name: {row['fullname']}<br/>
             Email: {row['email']}<br/>
             Compatibility Score: {row['compatibility_score']:.2f}
             """
