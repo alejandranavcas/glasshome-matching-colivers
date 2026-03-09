@@ -161,7 +161,8 @@ def render():
                 st.session_state.get("working_style"),
             ]
             # healthy_environments must be a non-empty list
-            if not st.session_state.get("healthy_environments") or not isinstance(st.session_state.get("healthy_environments"), list) or len(st.session_state.get("healthy_environments")) == 0:
+            healthy_envs = st.session_state.get("healthy_environments")
+            if not healthy_envs or not isinstance(healthy_envs, list) or len(healthy_envs) == 0:
                 return False
             return all(x is not None and x != "" for x in required if not isinstance(x, list))
         return True

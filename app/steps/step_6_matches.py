@@ -17,7 +17,7 @@ def render():
     st.write(f"You just took the first step towards your future Glasshome. Your personal brochure is cooking and will be delivered to your inbox {st.session_state.emailaddress} soon.")
 
     user_data = {
-        "name": st.session_state.fullname,
+        "fullname": st.session_state.fullname,
         "email": st.session_state.emailaddress,
         "resident_type": st.session_state.resident_type,
         "householdcomposition": st.session_state.householdcomposition,
