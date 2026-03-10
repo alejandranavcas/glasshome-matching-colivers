@@ -21,7 +21,7 @@ def render():
     )
     col_left, col_video, col_right = st.columns([1, 2, 1])
     with col_video:
-        st.video("images/video-section-3-personality.mov")
+        st.video("images/video-section-3-personality.mp4")
 
     st.write("Indicate how much you agree or disagree with the following statements.")
 

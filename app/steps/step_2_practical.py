@@ -40,7 +40,7 @@ def render():
     st.write("These are the requirements you have for your desired community. Please indicate your choices.")
     col_left, col_video, col_right = st.columns([1, 2, 1])
     with col_video:
-        st.video("images/video-section-1-practical-requirements.mov")
+        st.video("images/video-section-1-practical-requirements.mp4")
 
     req = st.session_state.user_requirements
 
