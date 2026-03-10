@@ -42,7 +42,7 @@ def render():
         st.header("Step 3: Lifestyle Preferences")
         col_left, col_video, col_right = st.columns([1, 2, 1])
         with col_video:
-            st.video("images/video-section-2-lifestyle-preferences.mov")
+            st.video("images/video-section-2-lifestyle-preferences.mp4")
 
     # Page 1: Relational & Social Interaction
     if page == 1:

@@ -21,7 +21,7 @@ def render():
         st.header("Step 5: Tell Us About Your Values")
         col_left, col_video, col_right = st.columns([1, 2, 1])
         with col_video:
-            st.video("images/video-section-4-values.mov")
+            st.video("images/video-section-4-values.mp4")
 
     # Page 1: First set of questions
     if page == 1:
