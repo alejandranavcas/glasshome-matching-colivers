@@ -12,6 +12,7 @@ from ui.layout import render_login_info, render_progress_bar
 
 def render():
     render_login_info()
+    demo_mode = st.session_state.get("demo_mode", "prod")
     if 'values_page' not in st.session_state:
         st.session_state['values_page'] = 0
     page = st.session_state['values_page']
@@ -183,8 +184,12 @@ def render():
                         "sharing_unfinished_ideas": st.session_state.get("sharing_unfinished_ideas", ""),
                         "working_style": st.session_state.get("working_style", "")
                     }
-                    save_texts_with_embeddings_2(profile)
-                    next_step()
+                    if demo_mode in ("sarah", "tom"):
+                        # Skip embedding generation in demo mode to avoid heavy model loading and timeouts.
+                        next_step()
+                    else:
+                        save_texts_with_embeddings_2(profile)
+                        next_step()
                 else:
                     st.warning("Please fill in all required fields before continuing.")
         else:
